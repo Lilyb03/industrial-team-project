@@ -137,7 +137,7 @@ Required JSON keys:
 
 `username` string - The requested username must be unique
 
-`full_name` string - the user's first name
+`full_name` string - the user's full name
 
 `password` string - User's password
 
