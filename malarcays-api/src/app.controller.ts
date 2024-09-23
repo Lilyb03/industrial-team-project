@@ -1,4 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Res, Param } from '@nestjs/common';
+import { join } from 'path';
+
 import { AppService } from './app.service';
 
 @Controller()
@@ -7,6 +9,6 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return "Root route";
+    return "Hello from root";
   }
 }
