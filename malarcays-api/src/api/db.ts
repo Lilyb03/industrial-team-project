@@ -8,12 +8,6 @@ export const sql = postgres({
 	password: 'malarcays1234'
 });
 
-export enum AccountTypes {
-	CUSTOMER,
-	COMPANY,
-	ADMIN
-}
-
 export interface Company {
 	company_id: number,
 	details_id: number,
@@ -42,7 +36,7 @@ export interface Account {
 
 export interface Type {
 	type_id: number,
-	type: AccountTypes
+	type_name: string
 }
 
 export interface Transaction {

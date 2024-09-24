@@ -18,4 +18,10 @@ export class ApiController {
 		res.setHeader("Content-Type", "application/json");
 		return JSON.stringify(await this.apiService.dbTest(req, res));
 	}
+
+	@Get('balance')
+	async getBalance(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
+		res.setHeader("Content-Type", "application/json");
+		return JSON.stringify(await this.apiService.getBalance(req, res));
+	}
 }
