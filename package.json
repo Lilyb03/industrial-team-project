@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "malarcays-api",
   "version": "0.0.1",
@@ -78,3 +79,6 @@
     "testEnvironment": "node"
   }
 }
+=======
+{}
+>>>>>>> 040d12ce023b4ce0b474dbe3712526f7736e7976
