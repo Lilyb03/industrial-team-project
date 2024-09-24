@@ -1,15 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
+import { Request } from 'express';
 import { Callback, Context, Handler } from 'aws-lambda';
+import { join } from 'path';
+
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 	await app.init();
 
+	app.useStaticAssets(join(__dirname, '..', 'public'), {
+		prefix: '/public/'
+	});
+
 	const expressApp = app.getHttpAdapter().getInstance();
+	expressApp.use((req: Request, _: any, next: any) => {
+		if (req.originalUrl === '/docs') {
+			req.originalUrl = '/docs/';
+		}
+		next();
+	})
 	return serverlessExpress({ app: expressApp });
 }
 
