@@ -9,11 +9,10 @@ import Navbar from 'react-bootstrap/Navbar';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-function App() {
+function TopBar(){
   return (
     <>
-      <header>
-      <Navbar className="bg-body-secondary">
+    <Navbar className="bg-body-secondary">
           <Container>
             <Col>
               T
@@ -28,19 +27,36 @@ function App() {
             </Col>
           </Container>
         </Navbar>
+        </>
+  )
+}
+
+function BottomBar(){
+  return (
+  <>
+    <Navbar className="bg-body-secondary fixed-bottom">
+      <Container>
+        <Button variant="secondary">Profile</Button>
+        <Button variant="secondary">Activity</Button>
+        <Button variant="secondary">Settings</Button>
+        <Button variant="secondary">More</Button>
+      </Container>
+    </Navbar>
+  </>
+  ) 
+}
+
+function App() {
+  return (
+    <>
+      <header>
+        <TopBar />
       </header>
       <body>
       
       </body>
       <footer>
-          <Navbar className="bg-body-secondary fixed-bottom">
-              <Container>
-                  <Button variant="secondary">Profile</Button>
-                  <Button variant="secondary">Activity</Button>
-                  <Button variant="secondary">Settings</Button>
-                  <Button variant="secondary">More</Button>
-              </Container>
-          </Navbar>
+        <BottomBar />
       </footer>
     </>
   )
