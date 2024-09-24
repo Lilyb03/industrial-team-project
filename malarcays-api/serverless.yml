@@ -6,12 +6,13 @@ plugins:
 
 custom:
   customDomain:
-    domainName: malarcays.uk
-    basePath: "api"
+    domainName: api.malarcays.uk
+    basePath: ""
     stage: "dev"
     createRoute53Record: true
     allowPathMatching: true
     apiType: rest
+    certificateName: "*.malarcays.uk"
 
 provider:
   name: aws
