@@ -12,7 +12,7 @@ def connect_to_aurora():
         database="postgres",
         user="malarcays",
         password="malarcays1234",
-        host="malarcays-db.cluster-c34y8sk2qsl6.us-east-1.rds.amazonaws.com",
+        host="malarcaysdb.cluster-c3s60cs04s05.eu-west-1.rds.amazonaws.com",
         port="5432",
     )
     cur = connection.cursor()
@@ -80,6 +80,11 @@ if __name__ == "__main__":
 
     print("----------- Inserting Customers ----------")
     generate_customer_data(NUM_CUSTOMERS, num_companies + 2)
+
+    cur.execute("select * from account")
+    print(len(cur.fetchall()))
+
+    conn.commit()
 
     cur.close()
     conn.close()
