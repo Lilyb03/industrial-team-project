@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 import { ApiService } from './api.service';
 
-@Controller('api')
+@Controller()
 export class ApiController {
 	constructor(private readonly apiService: ApiService) { }
 

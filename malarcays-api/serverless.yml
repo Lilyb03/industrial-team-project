@@ -2,6 +2,16 @@ service: malarcays-api
 
 plugins:
   - serverless-offline
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: malarcays.uk
+    basePath: "api"
+    stage: "dev"
+    createRoute53Record: true
+    allowPathMatching: true
+    apiType: rest
 
 provider:
   name: aws
