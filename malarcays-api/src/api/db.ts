@@ -36,6 +36,7 @@ export interface Account {
 	details_id: number,
 	company_id: number,
 	type_id: number,
+	greenscore: number,
 	amount: number
 }
 

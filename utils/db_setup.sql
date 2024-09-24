@@ -30,6 +30,7 @@ CREATE TABLE account (
   details_id INT NULL,
   company_id INT NULL,
   type_id INT NOT NULL,
+  greenscore REAL NOT NULL DEFAULT 0.0,
   amount INT NOT NULL,
   PRIMARY KEY (accountNumber),
   CONSTRAINT fk_details_account FOREIGN KEY (details_id) REFERENCES details (details_id),
