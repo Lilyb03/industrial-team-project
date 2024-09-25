@@ -148,31 +148,34 @@ export class ApiService {
 			...req.body
 		};
 
-		let accountData: Account[] = await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id where account.account_number=${transactionData.sender_account} or account.account_number=${transactionData.receiver_account}`;
+		let accountData: Account[] = await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id where account.account_number=${transactionData.sender_account} or account.account_number=${transactionData.receiver_account} order by array_position(array(${transactionData.sender_account}, ${transactionData.receiver_account}), account.account_number)`;
 
-		let receiverAccount: Account;
-
-		for (let i = 0; i < accountData.length; i++) {
-			if (transactionData.sender_account === 0) { break; }
-
-			if (accountData[i].account_number === transactionData.sender_account) {
-				if (accountData[i].amount > transactionData.amount) {
-					accountData[i].amount -= transactionData.amount;
-					receiverAccount = accountData[(i + 1) % 2]
-					receiverAccount.amount += transactionData.amount;
-					break;
-				} else {
-					return {
-						"type": 1,
-						"message": "Insufficient Funds",
-						"data": null
-					}
-				}
+		if ((accountData.length != 2 && transactionData.sender_account != 0) || accountData.length == 0) {
+			return {
+				"type": 1,
+				"message": "Invalid account number(s)"
 			}
 		}
 
+		let senderAccount: Account;
+		let receiverAccount: Account;
+
 		if (transactionData.sender_account === 0) {
 			receiverAccount = accountData[0];
+			receiverAccount.amount += transactionData.amount;
+		} else {
+			senderAccount = accountData[0];
+			receiverAccount = accountData[1];
+
+			if (senderAccount.amount < transactionData.amount) {
+				return {
+					"type": 1,
+					"message": "Insufficient Funds",
+					"data": null
+				}
+			}
+
+			senderAccount.amount -= transactionData.amount;
 			receiverAccount.amount += transactionData.amount;
 		}
 
