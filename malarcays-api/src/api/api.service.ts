@@ -71,7 +71,7 @@ export class ApiService {
 		}
 	}
 
-	async search(req: Request, res: Response): Promise<object> {
+	async accountSearch(req: Request, res: Response): Promise<object> {
 		let headerCheck: object = this.checkHeaders(req);
 		if (headerCheck["type"] != 0) { return headerCheck; }
 
