@@ -1,19 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
-import { ApiController } from './api/api.controller';
-import { ApiService } from './api/api.service';
-
+import { ApiGetModule } from './api-get/api-get.module';
 
 @Module({
-  imports: [
-    ApiModule,
-  ],
-  controllers: [AppController, ApiController],
-  providers: [AppService, ApiService],
+  imports: [ApiModule, ApiGetModule],
+  controllers: [],
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}

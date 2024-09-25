@@ -1,16 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { json, urlencoded } from 'body-parser';
+import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-
-  app.use(json());
-  app.use(urlencoded({ extended: true }));
-
+  app.enableCors();
+  app.setGlobalPrefix('api');
+  app.use(express.json());
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
-  console.log('Server is running on http://localhost:3000');
 }
-
 bootstrap();
