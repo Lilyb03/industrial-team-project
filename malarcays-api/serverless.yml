@@ -10,13 +10,37 @@ provider:
   region: eu-west-1
 
 functions:
+  signup:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          path: api/signup
+          method: post
+          cors: true
+
+  login:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          path: api/login
+          method: post
+          cors: true
+
+  balance:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          path: api/balance
+          method: get
+          cors: true
+
+
+
   main:
     handler: dist/serverless.handler
     events:
       - http: ANY /
       - http: ANY /{proxy+}
-    layers:
-      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:1
 
 package:
   exclude:

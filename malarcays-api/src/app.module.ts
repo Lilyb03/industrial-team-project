@@ -5,12 +5,15 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
+import { ApiController } from './api/api.controller';
+import { ApiService } from './api/api.service';
+
 
 @Module({
   imports: [
     ApiModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ApiController],
+  providers: [AppService, ApiService],
 })
 export class AppModule { }
