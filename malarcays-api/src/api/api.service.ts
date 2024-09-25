@@ -185,14 +185,12 @@ export class ApiService {
 			let company: Company = (await sql<Company[]>`select company.greenscore, account.account_number from account inner join company on company.company_id=account.company_id where account_number=${receiverAccount.account_number};`)[0];
 			greenscore = (6 * company.greenscore * Math.log2((transactionData.amount / 500) + 1));
 		}
-
 		transactionData.greenscore = greenscore;
 
 		for (const a of accountData) {
-			let queryRes = await sql`update account set amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore}` : sql``} where account_number=${a.account_number}`;
+			let queryRes = await sql`update account set amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} where account_number=${a.account_number}`;
 		}
-		await sql`insert into transaction (sender_account, receiver_account, amount, date_time, greenscore) values (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore})`;
-
+		await sql`insert into transaction (sender_account, receiver_account, amount, date_time, greenscore) values (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
 		return {
 			"type": 0,
 			"message": "Success",
