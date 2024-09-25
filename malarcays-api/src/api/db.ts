@@ -28,8 +28,11 @@ export interface Details {
 export interface Account {
 	account_number: number,
 	details_id: number,
+	name?: string,
+	last_name?: string,
 	company_id: number,
 	type_id: number,
+	type_name?: string,
 	greenscore: number,
 	amount: number
 }

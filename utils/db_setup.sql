@@ -4,18 +4,18 @@ CREATE SCHEMA public;
 CREATE TYPE type_names as ENUM ('customer', 'company', 'admin');
 
 CREATE TABLE details (
-  details_id INT PRIMARY KEY,
+  details_id SERIAL NOT NULL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   last_name VARCHAR(255) NULL
 );
 
 CREATE TABLE type (
-  type_id INT PRIMARY KEY,
+  type_id SERIAL NOT NULL PRIMARY KEY,
   type_name type_names NOT NULL
 );
 
 CREATE TABLE company (
-  company_id INT NOT NULL PRIMARY KEY,
+  company_id SERIAL NOT NULL PRIMARY KEY,
   details_id INT NOT NULL,
   spending_category VARCHAR(255) NOT NULL,
   carbon REAL NOT NULL DEFAULT 0.0,
@@ -26,7 +26,7 @@ CREATE TABLE company (
 );
 
 CREATE TABLE account (
-  account_number INT NOT NULL,
+  account_number SERIAL NOT NULL,
   details_id INT NULL,
   company_id INT NULL,
   type_id INT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE account (
 );
 
 CREATE TABLE transaction (
-  transaction_id INT NOT NULL,
+  transaction_id SERIAL NOT NULL,
   sender_account INT NOT NULL,
   receiver_account INT NOT NULL,
   amount INT NOT NULL,

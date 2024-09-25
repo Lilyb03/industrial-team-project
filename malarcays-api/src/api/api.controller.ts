@@ -24,4 +24,10 @@ export class ApiController {
 		res.setHeader("Content-Type", "application/json");
 		return JSON.stringify(await this.apiService.getBalance(req, res));
 	}
+
+	@Get('search')
+	async search(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
+		res.setHeader("Content-Type", "application/json");
+		return JSON.stringify(await this.apiService.search(req, res));
+	}
 }
