@@ -27,7 +27,7 @@ export class ApiService {
 
 	async dbTest(req: Request, res: Response): Promise<object> {
 		const startTime = Date.now();
-		let data: Account[] = await sql<Account[]>`select * from account`;
+		let data: Account[] = await sql<Account[]>`SELECT * FROM account`;
 		const endTime = Date.now();
 		if (data.length > 0) {
 			return {
@@ -51,10 +51,10 @@ export class ApiService {
 		}
 
 		let accountNum: number = parseInt(req.query.account.toString());
-		let data: Account[] = await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id where account_number=${accountNum}`;
+		let data: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account_number=${accountNum}`;
 		let account: Account = data[0];
 
-		let transactions: Transaction[] = await sql<Transaction[]>`select * from transaction where sender_account=${account.account_number} or receiver_account=${account.account_number}`;
+		let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number}`;
 
 		let accountData: AccountData = {
 			account_number: account.account_number,
@@ -85,10 +85,10 @@ export class ApiService {
 		if ("name" in req.query) {
 			if ("account" in req.query) { query = sql`${query} or `; }
 			let name: string = req.query.name.toString();
-			query = sql`${query} concat(details.name, details.last_name) like ${name})`;
+			query = sql`${query} concat(details.name, details.last_name) LIKE ${name})`;
 		}
 
-		let data: Account[] = (await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id inner join details on account.details_id=details.details_id where ${query};`).slice(0, 4);
+		let data: Account[] = (await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id INNER JOIN details ON account.details_id=details.details_id WHERE ${query};`).slice(0, 4);
 
 		let accountData: AccountDetails[] = new Array<AccountDetails>();
 
@@ -102,7 +102,7 @@ export class ApiService {
 			};
 
 			if (d.account_type === "company") {
-				let company: Company = (await sql<Company[]>`select * from company where company_id=${a.company_id}`)[0];
+				let company: Company = (await sql<Company[]>`SELECT * FROM company WHERE company_id=${a.company_id}`)[0];
 				let c: CompanyData = {
 					company_name: a.name,
 					spending_category: company.spending_category,
@@ -148,7 +148,7 @@ export class ApiService {
 			...req.body
 		};
 
-		let accountData: Account[] = await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id where account.account_number=${transactionData.sender_account} or account.account_number=${transactionData.receiver_account} order by array_position(array(${transactionData.sender_account}, ${transactionData.receiver_account}), account.account_number)`;
+		let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array(${transactionData.sender_account}, ${transactionData.receiver_account}), account.account_number)`;
 
 		if ((accountData.length != 2 && transactionData.sender_account != 0) || accountData.length == 0) {
 			return {
@@ -182,15 +182,15 @@ export class ApiService {
 		let greenscore: number;
 
 		if (receiverAccount.type_name === "company") {
-			let company: Company = (await sql<Company[]>`select company.greenscore, account.account_number from account inner join company on company.company_id=account.company_id where account_number=${receiverAccount.account_number};`)[0];
+			let company: Company = (await sql<Company[]>`SELECT company.greenscore, account.account_number FROM account INNER JOIN company ON company.company_id=account.company_id WHERE account_number=${receiverAccount.account_number};`)[0];
 			greenscore = (6 * company.greenscore * Math.log2((transactionData.amount / 500) + 1));
 		}
 		transactionData.greenscore = greenscore;
 
 		for (const a of accountData) {
-			let queryRes = await sql`update account set amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} where account_number=${a.account_number}`;
+			let queryRes = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} WHERE account_number=${a.account_number}`;
 		}
-		await sql`insert into transaction (sender_account, receiver_account, amount, date_time, greenscore) values (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
+		await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
 		return {
 			"type": 0,
 			"message": "Success",
