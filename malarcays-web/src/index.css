@@ -23,3 +23,7 @@ text-align: center;
 #img{
   float: right;
 }
+
+#butt{
+  border-radius: 50px;
+}
