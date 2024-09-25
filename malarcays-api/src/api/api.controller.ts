@@ -36,4 +36,10 @@ export class ApiController {
 		res.setHeader("Content-Type", "application/json");
 		return JSON.stringify(await this.apiService.companySearch(req, res));
 	}
+
+	@Post('transaction')
+	async createTransaction(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
+		res.setHeader("Content-Type", "application/json");
+		return JSON.stringify(await this.apiService.createTransaction(req, res));
+	}
 }

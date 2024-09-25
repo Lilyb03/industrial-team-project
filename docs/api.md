@@ -47,10 +47,11 @@ Example:
 	"green_score": 10,
 	"transactions": [
 		{
-			"timestamp": 1726657966,
-			"sender": 000000000,
-			"recipient": 000000001,
-			"green_score": 0,
+			"transaction_id": 1,
+			"timestamp": "2024-09-25T09:10:17.051Z",
+			"sender_account": 000000000,
+			"recipient_account": 000000001,
+			"greenscore": 0,
 			"amount": 100
 		}
 	]
@@ -63,13 +64,15 @@ The transaction object is used to store data for a specific transaction.
 
 Keys:
 
-`timestamp` integer - unix timestamp of when transaction was carried out
+`transaction_id` integer - sequential id of the transaction
 
-`sender` integer - the account number of the sender
+`timestamp` string - string timestamp of when transaction was carried out
 
-`recipient` integer - the account number of the recipient
+`sender_account` integer - the account number of the sender
 
-`green_score` double - the green score of this transaction
+`recipient_account` integer - the account number of the recipient
+
+`greenscore` double - the green score of this transaction
 
 `amount` integer - the amount transferred in pence
 
@@ -77,10 +80,11 @@ Example:
 
 ```json
 {
-	"timestamp": 1726657966,
-	"sender": 000000000,
-	"recipient": 000000001,
-	"green_score": 0,
+	"transaction_id": 1,
+	"timestamp": "2024-09-25T09:10:17.051Z",
+	"sender_account": 000000000,
+	"recipient_account": 000000001,
+	"greenscore": 0,
 	"amount": 100
 }
 ```
@@ -284,7 +288,7 @@ Required JSON keys:
 
 `recipient` integer - account number of recipient
 
-`amount` double - amount to be transferred
+`amount` integer - amount to be transferred in pence
 
 #### Response
 

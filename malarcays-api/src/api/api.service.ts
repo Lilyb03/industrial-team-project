@@ -139,4 +139,61 @@ export class ApiService {
 			"data": data
 		}
 	}
+
+	async createTransaction(req: Request, res: Response): Promise<object> {
+		let headerCheck: object = this.checkHeaders(req);
+		if (headerCheck["type"] != 0) { return headerCheck; }
+
+		let transactionData: Transaction = {
+			...req.body
+		};
+
+		let accountData: Account[] = await sql<Account[]>`select * from account inner join type on account.type_id=type.type_id where account.account_number=${transactionData.sender_account} or account.account_number=${transactionData.receiver_account}`;
+
+		let receiverAccount: Account;
+
+		for (let i = 0; i < accountData.length; i++) {
+			if (transactionData.sender_account === 0) { break; }
+
+			if (accountData[i].account_number === transactionData.sender_account) {
+				if (accountData[i].amount > transactionData.amount) {
+					accountData[i].amount -= transactionData.amount;
+					receiverAccount = accountData[(i + 1) % 2]
+					receiverAccount.amount += transactionData.amount;
+					break;
+				} else {
+					return {
+						"type": 1,
+						"message": "Insufficient Funds",
+						"data": null
+					}
+				}
+			}
+		}
+
+		if (transactionData.sender_account === 0) {
+			receiverAccount = accountData[0];
+			receiverAccount.amount += transactionData.amount;
+		}
+
+		let greenscore: number;
+
+		if (receiverAccount.type_name === "company") {
+			let company: Company = (await sql<Company[]>`select company.greenscore, account.account_number from account inner join company on company.company_id=account.company_id where account_number=${receiverAccount.account_number};`)[0];
+			greenscore = (6 * company.greenscore * Math.log2((transactionData.amount / 500) + 1));
+		}
+
+		transactionData.greenscore = greenscore;
+
+		for (const a of accountData) {
+			let queryRes = await sql`update account set amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore}` : sql``} where account_number=${a.account_number}`;
+		}
+		await sql`insert into transaction (sender_account, receiver_account, amount, date_time, greenscore) values (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore})`;
+
+		return {
+			"type": 0,
+			"message": "Success",
+			"data": transactionData
+		}
+	}
 }

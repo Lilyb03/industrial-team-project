@@ -9,13 +9,13 @@ export const sql = postgres({
 });
 
 export interface Company {
-	company_id: number,
-	details_id: number,
-	spending_category: string,
-	carbon: number,
-	waste: number,
-	sustainability: number,
-	greenscore: number,
+	company_id?: number,
+	details_id?: number,
+	spending_category?: string,
+	carbon?: number,
+	waste?: number,
+	sustainability?: number,
+	greenscore?: number,
 	account_number?: number
 }
 
@@ -44,10 +44,10 @@ export interface Type {
 }
 
 export interface Transaction {
-	transaction_id: number,
+	transaction_id?: number,
 	sender_account: number,
 	receiver_account: number,
 	amount: number,
-	datetime: Date,
-	greenscore: number
+	datetime?: Date,
+	greenscore?: number
 }
