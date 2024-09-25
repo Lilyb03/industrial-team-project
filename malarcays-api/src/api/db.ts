@@ -15,7 +15,8 @@ export interface Company {
 	carbon: number,
 	waste: number,
 	sustainability: number,
-	greenscore: number
+	greenscore: number,
+	account_number?: number
 }
 
 export interface Details {

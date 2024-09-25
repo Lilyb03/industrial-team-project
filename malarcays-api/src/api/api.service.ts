@@ -124,4 +124,19 @@ export class ApiService {
 			"accounts": accountData
 		}
 	}
+
+	async companySearch(req: Request, res: Response): Promise<object> {
+		let headerCheck: object = this.checkHeaders(req);
+		if (headerCheck["type"] != 0) { return headerCheck; }
+
+		let spending_category: string = req.query.category.toString()
+
+		let data: Company[] = await sql<Company[]>`select company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number from company inner join account on company.details_id=account.details_id where company.spending_category like ${spending_category} order by company.greenscore desc;`;
+
+		return {
+			"type": 0,
+			"message": "Success",
+			"data": data
+		}
+	}
 }

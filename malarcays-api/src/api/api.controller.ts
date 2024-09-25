@@ -25,9 +25,15 @@ export class ApiController {
 		return JSON.stringify(await this.apiService.getBalance(req, res));
 	}
 
-	@Get('search')
-	async search(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
+	@Get('account')
+	async accountSearch(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
 		res.setHeader("Content-Type", "application/json");
-		return JSON.stringify(await this.apiService.search(req, res));
+		return JSON.stringify(await this.apiService.accountSearch(req, res));
+	}
+
+	@Get('company')
+	async companySearch(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<string> {
+		res.setHeader("Content-Type", "application/json");
+		return JSON.stringify(await this.apiService.companySearch(req, res));
 	}
 }
