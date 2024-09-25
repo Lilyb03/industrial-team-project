@@ -13,7 +13,7 @@ All POST request bodies have content type `application/json`.
 - [X] make transaction
 - [X] get details (like name, personal/company account etc.) for any account number
 - [ ] receive transaction with notification
-- [ ] account permissions
+- [X] account permissions
 - [ ] create, update, delete db entries (except transactions)
 - [ ] Authentication
 
@@ -29,10 +29,9 @@ Keys:
 
 `account_number` integer - the number of the account for which data is stored
 
-`balance` double - the current account balance
+`balance` integer - the current account balance in pence
 
-`permissions` integer - binary permission flags 
-TODO: finalise this
+`permissions` string - either "customer", "company", or "admin" depending on level of permissions
 
 `green_score` double - the account's current environmental green score
 
@@ -72,7 +71,7 @@ Keys:
 
 `green_score` double - the green score of this transaction
 
-`amount` double - the amount transferred
+`amount` integer - the amount transferred in pence
 
 Example:
 
@@ -96,7 +95,9 @@ Keys:
 
 `account_type` integer - the type of account: 0 = personal, 1 = company
 
-`name` string - the name attached to the account (either user's full name or company name)
+`name` string - user's first name or company name
+
+`last_name` string - user's last name (null for company)
 
 `company` object - company object (null if account is personal)
 
@@ -120,8 +121,6 @@ Keys:
 
 `account_number` integer - the company's account number
 
-`summary` string - summary of the company's operations
-
 ## Routes
 
 ### Sign up
@@ -137,7 +136,9 @@ Required JSON keys:
 
 `username` string - The requested username must be unique
 
-`full_name` string - the user's full name
+`name` string - the user's first name or company namy
+
+`last_name` string - the user's last name (null for companies)
 
 `password` string - User's password
 
@@ -213,14 +214,14 @@ Keys:
 
 `account_data` object - account data object for the requested account
 
-### Search
+### Account Search
 
 This route can be used to search for public account details based on an account number or name.
 
 #### Request
 
 Endpoint:
-`GET /search`
+`GET /account`
 
 Optional GET parameters:
 
@@ -228,9 +229,10 @@ Optional GET parameters:
 
 `name` string - the name data is requested for
 
-`category` string - the spending category to search within (NOTE: will return company objects instead of account details objects)
-
 #### Response
+
+!!! note
+	The `data` key is constrained to 5 accounts
 
 Keys:
 
@@ -238,7 +240,34 @@ Keys:
 
 `message` string - relevant error or success message
 
-`data` array - array of account details or company objects
+`data` array - array of account details
+
+### Company Search
+
+This route can be used to search for companies based on a certain spending category.
+
+#### Request
+
+Endpoint:
+`GET /account`
+
+Required GET parameters:
+
+`category` string - the spending category to search for
+
+
+#### Response
+
+!!! note
+	The `data` key is constrained to 5 accounts
+
+Keys:
+
+`type` integer - response type: 0 = success, 1 = failure (more details in message key)
+
+`message` string - relevant error or success message
+
+`data` array - array of company details
 
 ### Transaction
 
