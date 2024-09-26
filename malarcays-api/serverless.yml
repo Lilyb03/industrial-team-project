@@ -24,8 +24,12 @@ functions:
   main:
     handler: dist/serverless.handler
     events:
-      - http: ANY /
-      - http: ANY /{proxy+}
+      - http:
+          path: /
+          method: any
+      - http:
+          path: /{proxy+}
+          method: any
     layers:
       - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:2
 

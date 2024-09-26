@@ -13,17 +13,7 @@ async function bootstrap(): Promise<Handler> {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 	await app.init();
 
-	app.useStaticAssets(join(__dirname, '..', 'public'), {
-		prefix: '/public/'
-	});
-
 	const expressApp = app.getHttpAdapter().getInstance();
-	expressApp.use((req: Request, _: any, next: any) => {
-		if (req.originalUrl === '/docs') {
-			req.originalUrl = '/docs/';
-		}
-		next();
-	})
 	return serverlessExpress({ app: expressApp });
 }
 
