@@ -1,4 +1,4 @@
-import { Company, Transaction } from './db';
+import { Transaction } from './db';
 
 export interface AccountData {
 	account_number: number,

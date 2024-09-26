@@ -225,7 +225,7 @@ This route can be used to search for public account details based on an account 
 #### Request
 
 Endpoint:
-`GET /account`
+`GET /search/account`
 
 Optional GET parameters:
 
@@ -253,7 +253,7 @@ This route can be used to search for companies based on a certain spending categ
 #### Request
 
 Endpoint:
-`GET /account`
+`GET /search/company`
 
 Required GET parameters:
 
