@@ -3,10 +3,12 @@ import { Request, Response } from 'express';
 
 import { sql, Account, Company } from '../utils/db';
 import { AccountDetails, CompanyData } from '../utils/api';
+import { AccountDTO } from './dtos/account.dto';
+import { CompanyDTO } from './dtos/company.dto';
 
 @Injectable()
 export class SearchService {
-  async accountSearch(req: Request, res: Response): Promise<object> {
+  async accountSearch(body: AccountDTO, res: Response): Promise<object> {
     /** 
     * Function to search for an account based on account number or name
     * @param {Request} req - express request object
@@ -18,21 +20,21 @@ export class SearchService {
     let query: any = sql``;
 
     // handle if search based on account number is requested
-    if ("account" in req.query) {
+    if (body.account) {
       // convert account number from query into something useful
-      let accountNum: number = parseInt(req.query.account.toString());
+      let accountNum: number = body.account;
 
       // add to query
       query = sql`${query} account.account_number=${accountNum}`;
     }
 
     // handle if search based on name is requested
-    if ("name" in req.query) {
+    if (body.name) {
       // add 'or' to query if both name and account are requested
-      if ("account" in req.query) { query = sql`${query} or `; }
+      if (body.account) { query = sql`${query} or `; }
 
       // convert name from query into something useful
-      let name: string = req.query.name.toString();
+      let name: string = body.name;
 
       // add to query
       query = sql`${query} concat(details.name, details.last_name) LIKE ${name})`;
@@ -57,14 +59,19 @@ export class SearchService {
       };
 
       if (d.account_type === "company") {
-        let company: Company = (await sql<Company[]>`SELECT * FROM company WHERE company_id=${a.company_id};`)[0];
+        let companies: Company[] = await sql<Company[]>`SELECT * FROM company WHERE company_id=${a.company_id};`;
+
+        if (companies.length === 0) {
+          throw new Error("Company request returned zero companies, database broken");
+        }
+
         let c: CompanyData = {
           company_name: a.name,
-          spending_category: company.spending_category,
-          carbon_emissions: company.carbon,
-          waste_management: company.waste,
-          sustainability_practices: company.sustainability,
-          rag_score: company.greenscore,
+          spending_category: companies[0].spending_category,
+          carbon_emissions: companies[0].carbon,
+          waste_management: companies[0].waste,
+          sustainability_practices: companies[0].sustainability,
+          rag_score: companies[0].greenscore,
           account_number: a.account_number
         }
         d.company = c;
@@ -81,7 +88,7 @@ export class SearchService {
     }
   }
 
-  async companySearch(req: Request, res: Response): Promise<object> {
+  async companySearch(body: CompanyDTO, res: Response): Promise<object> {
     /** 
     * Function to search for companies based on spending category
     * @param {Request} req - express request object
@@ -89,7 +96,7 @@ export class SearchService {
     * @return {Promise<object>} promise to object response for client
     */
 
-    let spending_category: string = req.query.category.toString()
+    let spending_category: string = body.category;
 
     let data: Company[] = await sql<Company[]>`SELECT company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number FROM company INNER JOIN account ON company.details_id=account.details_id WHERE company.spending_category LIKE ${spending_category} ORDER BY company.greenscore DESC;`;
 
