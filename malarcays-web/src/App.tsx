@@ -8,7 +8,6 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Col from 'react-bootstrap/Col';
 //import Row from 'react-bootstrap/Row';
@@ -58,7 +57,7 @@ function MainPage({page}: {page: number}){
     case 0:
       return (
         <>
-        <h1>first page</h1>
+        <TransactionsPage />
         </>
       );
     break;
@@ -87,17 +86,13 @@ function MainPage({page}: {page: number}){
   
 }
 
-function transactionsPage() {
+function TransactionsPage() {
   return (
    <>
-   <head>
-        <title>Malarcays Demo</title>
-      </head>
-      <body>
       <Stack gap={2}>
         {/* account number will need to be changed with an api call */}
         <p id='accNum'>Account: <strong>C123456</strong></p>
-        <Container className='ml-3 mr-3 d-grid' id='box'>
+        <Container className='d-grid' id='box'>
           {/* also needs to be changed based on api call */}
           <h2 id='admTotal'>£10,000.00</h2>
           <Button id='butt' variant="primary" className='mb-2'>Make Payment</Button>
@@ -116,7 +111,6 @@ function transactionsPage() {
         </ListGroup>
         </Container>
         </Stack>
-      </body>
    </>
   )
 }
