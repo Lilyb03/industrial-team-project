@@ -8,6 +8,10 @@ p {
 text-align: center;
 }
 
+h2{
+  text-align: center;
+}
+
 #box {
   background-color: whitesmoke;
   border-radius: 15px;
@@ -26,4 +30,9 @@ text-align: center;
 
 #butt{
   border-radius: 50px;
+}
+
+#backbutt{
+  border-radius: 50px;
+  max-width: 100px;
 }
