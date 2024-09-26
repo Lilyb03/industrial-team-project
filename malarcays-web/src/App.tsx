@@ -86,7 +86,17 @@ function MainPage({page}: {page: number}){
   
 }
 
+function apiTest(){
+  const apiCall = "https://api.malarcays.uk/search/account?account=1";
+  fetch(apiCall)
+  .then((resp) => resp.json())
+  .then(function(data){
+    console.log(data);
+  });
+}
+
 function TransactionsPage() {
+
   return (
    <>
       <Stack gap={2}>
@@ -116,7 +126,6 @@ function TransactionsPage() {
 }
 
 function App() {
-
   const [page, setPage] = useState(0);
 
   return (
