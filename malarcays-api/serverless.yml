@@ -27,7 +27,7 @@ functions:
       - http: ANY /
       - http: ANY /{proxy+}
     layers:
-      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:1
+      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:2
 
 package:
   exclude:
