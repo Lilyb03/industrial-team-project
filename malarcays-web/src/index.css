@@ -1,0 +1,28 @@
+body {
+  min-height: 100vh;
+  background-image: linear-gradient(rgb(123, 202, 202), white)
+}
+
+p {
+text-align: center;
+}
+
+#box {
+  background-color: whitesmoke;
+  border-radius: 15px;
+  text-align: center;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#perchText{
+  text-align: left;
+}
+
+#img{
+  float: right;
+}
+
+#butt{
+  border-radius: 50px;
+}
