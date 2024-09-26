@@ -13,6 +13,54 @@ import Col from 'react-bootstrap/Col';
 //import Row from 'react-bootstrap/Row';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
+const accountDetails: string = '{' +
+  '"type": 0,' +
+  '"message": "Success",' +
+  '"account_data": {' +
+    '"account_number": 91,' +
+    '"balance": 1400,' +
+    '"green_score": 1259,' +
+    '"permissions": "customer",' +
+    '"transactions": [' +
+      '{' +
+        '"transaction_id": 2,' +
+        '"sender_account": 90,' +
+        '"receiver_account": 91,' +
+        '"amount": 100,' +
+        '"date_time": "2024-09-25T10:50:49.834Z",' +
+        '"greenscore": 0' +
+      '},' +
+      '{' +
+        '"transaction_id": 3,' +
+        '"sender_account": 90,' +
+        '"receiver_account": 91,' +
+        '"amount": 100,' +
+        '"date_time": "2024-09-25T10:51:55.884Z",' +
+        '"greenscore": 0' +
+      '}' +
+    ']' +
+  '}' +
+'}';
+
+const Details = JSON.parse(accountDetails);
+
+function CalculateGreenStuff(score: number){
+
+  //find user level
+  const level: number = Math.floor(
+    Math.pow(score ,1/1.6) * 0.3);
+
+  const currentLevelBoundary = Math.pow((level/0.3), 1.6);
+
+  const nextLevelBoundary = Math.pow(((level+1)/0.3), 1.6);
+
+  const percDiff: number = ((score - currentLevelBoundary) / (nextLevelBoundary - currentLevelBoundary)) * 100;
+  
+  return percDiff;
+}
+
+CalculateGreenStuff(Details.account_data.green_score);
+
 function TopBar(){
 
   return (
@@ -20,7 +68,7 @@ function TopBar(){
     <Navbar className="bg-body-secondary">
           <Container fluid className="text-center">
             <Col>
-              <ProgressBar striped variant="success" className="border" now={60}/>
+              <ProgressBar striped variant="success" className="border" now={CalculateGreenStuff(1200)}/>
             </Col>
 
             <Col>
@@ -86,15 +134,6 @@ function MainPage({page}: {page: number}){
   
 }
 
-function apiTest(){
-  const apiCall = "https://api.malarcays.uk/search/account?account=1";
-  fetch(apiCall)
-  .then((resp) => resp.json())
-  .then(function(data){
-    console.log(data);
-  });
-}
-
 function TransactionsPage() {
 
   return (
@@ -125,9 +164,19 @@ function TransactionsPage() {
   )
 }
 
+// function FetchUser(){
+//   const apiCall = "https://api.malarcays.uk/balance?account=91";
+
+//   fetch(apiCall)
+//   .then((resp) => resp.json())
+//   .then(function(data){
+//     return data;
+//   });
+// }
+
 function App() {
   const [page, setPage] = useState(0);
-
+  
   return (
     <>
       <header>
