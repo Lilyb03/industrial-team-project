@@ -8,20 +8,15 @@ export const sql = postgres({
 	password: 'malarcays1234'
 });
 
-export enum AccountTypes {
-	CUSTOMER,
-	COMPANY,
-	ADMIN
-}
-
 export interface Company {
-	company_id: number,
-	details_id: number,
-	spending_category: string,
-	carbon: number,
-	waste: number,
-	sustainability: number,
-	greenscore: number
+	company_id?: number,
+	details_id?: number,
+	spending_category?: string,
+	carbon?: number,
+	waste?: number,
+	sustainability?: number,
+	greenscore?: number,
+	account_number?: number
 }
 
 export interface Details {
@@ -34,21 +29,25 @@ export interface Details {
 export interface Account {
 	account_number: number,
 	details_id: number,
+	name?: string,
+	last_name?: string,
 	company_id: number,
 	type_id: number,
+	type_name?: string,
+	greenscore: number,
 	amount: number
 }
 
 export interface Type {
 	type_id: number,
-	type: AccountTypes
+	type_name: string
 }
 
 export interface Transaction {
-	transaction_id: number,
+	transaction_id?: number,
 	sender_account: number,
 	receiver_account: number,
 	amount: number,
-	datetime: Date,
-	greenscore: number
+	datetime?: Date,
+	greenscore?: number
 }

@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountsControllerGet } from './accounts.controller';
+import { BankingController } from './banking.controller';
 
 describe('AccountsController', () => {
-  let controller: AccountsControllerGet;
+  let controller: BankingController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AccountsControllerGet],
+      controllers: [BankingController],
     }).compile();
 
-    controller = module.get<AccountsControllerGet>(AccountsControllerGet);
+    controller = module.get<BankingController>(BankingController);
   });
 
   it('should be defined', () => {

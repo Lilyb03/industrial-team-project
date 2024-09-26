@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AccountTypes, sql } from '../../../db';
-import { CreateAccountsDTO } from '../../controllers/dtos/createAccounts.dto';
+import { sql } from '../utils/db';
+import { CreateAccountsDTO } from './dtos/createAccounts.dto';
 
 @Injectable()
 export class AccountsService {
@@ -37,5 +37,23 @@ export class AccountsService {
     }
 
     return createdAccount;
+  }
+
+  async login(name: string) {
+    try {
+      const rows = await sql`
+        SELECT * FROM account a
+        JOIN details d ON a.details_id = d.details_id
+        WHERE d.name = ${name}
+      `;
+
+      if (rows.length === 0) {
+        return null;
+      }
+
+      return rows[0];
+    } catch (error) {
+      throw new Error(`Error fetching account: ${error.message}`);
+    }
   }
 }

@@ -31,7 +31,7 @@ def insert_company_data(cur):
     company_query = "INSERT INTO company (company_id, details_id, spending_category, carbon, waste, sustainability, greenscore) VALUES "
     type_query = "INSERT INTO type (type_id, type_name) VALUES (1, 'customer'), (2, 'company'), (3, 'admin');"
     details_query = "INSERT INTO details (details_id, name) VALUES "
-    accounts_query = "INSERT INTO account (accountNumber, details_id, company_id, type_id, amount) VALUES "
+    accounts_query = "INSERT INTO account (account_number, details_id, company_id, type_id, amount) VALUES "
 
     for i, row in data_df.iterrows():
         details_query += f"({i+1}, '{row['Company Name']}'),"
@@ -51,9 +51,9 @@ def insert_company_data(cur):
 
 
 def generate_customer_data(num_entries, num_companies):
-    details_query = "INSERT INTO details (details_id, name, lastName) VALUES "
+    details_query = "INSERT INTO details (details_id, name, last_name) VALUES "
     account_query = (
-        "INSERT INTO account (accountNumber, details_id, type_id, amount) VALUES "
+        "INSERT INTO account (account_number, details_id, type_id, amount) VALUES "
     )
 
     for i in range(num_entries):
