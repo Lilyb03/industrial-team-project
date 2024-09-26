@@ -5,33 +5,61 @@ import { CreateAccountsDTO } from './dtos/createAccounts.dto';
 @Injectable()
 export class AccountsService {
   async createAccount(createAccountsDto: CreateAccountsDTO) {
-    const { name, lastName, type_id, amount } = createAccountsDto;
+    const { name, lastName, type_id, spending_category, amount } = createAccountsDto;
+
+    const allDetailsIds = await sql`
+        SELECT details_id FROM details;
+      `;
+
+    const allType = await sql`
+        SELECT * FROM type;
+      `;
+
+    const allAccountIds = await sql`
+        SELECT account_number FROM account;
+      `;
+
+    const accountId = allAccountIds.length + 1;
+
+    const detailsId = allDetailsIds.length + 1;
 
 
     const detailsResult = await sql`
-      INSERT INTO details (name, last_name)
-      VALUES (${name}, ${lastName || null}) 
-      RETURNING details_id;
+      INSERT INTO details (details_id, name, last_name)
+      VALUES (${detailsId}, ${name}, ${lastName || null}) 
     `;
 
     let createdAccount;
 
+
     if (type_id === 'COMPANY') {
+
+      const allCompanyIds = await sql`
+        SELECT company_id FROM company;
+      `;
+
+      const companyId = allCompanyIds.length + 1;
+
       const companyResult = await sql`
-        INSERT INTO company (details_id)
-        VALUES (${detailsResult[0].details_id})
+        INSERT INTO company (company_id, details_id, spending_category)
+        VALUES (${companyId}, ${detailsId}, ${spending_category})
         RETURNING company_id;
       `;
 
+      // const companyId = companyResult[0].company_id;
+
       createdAccount = await sql`
-        INSERT INTO account (details_id, type_id, amount, company_id)
-        VALUES (${detailsResult[0].details_id}, ${type_id}, ${amount}, ${companyResult[0].company_id})
+        INSERT INTO account (account_number, details_id, type_id, amount, company_id)
+        VALUES (${accountId}, ${detailsId}, '2', ${amount}, ${companyId})
         RETURNING account_number;
       `;
     } else {
+
+
+
       createdAccount = await sql`
-        INSERT INTO account (details_id, type_id, amount)
-        VALUES (${detailsResult[0].details_id}, ${type_id}, ${amount})
+        INSERT INTO account (account_number, details_id, type_id, amount)
+        VALUES (${accountId}, ${detailsId}, '1', ${amount})
         RETURNING account_number;
       `;
     }
@@ -41,6 +69,7 @@ export class AccountsService {
 
   async login(name: string) {
     try {
+
       const rows = await sql`
         SELECT * FROM account a
         JOIN details d ON a.details_id = d.details_id

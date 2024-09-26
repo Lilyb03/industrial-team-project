@@ -19,6 +19,10 @@ export class CreateAccountsDTO {
   @IsEnum(AccountTypes)
   type_id: AccountTypes;
 
+  @IsOptional()
+  @IsString()
+  spending_category?: string;
+
   @IsNotEmpty()
   @IsNumber()
   amount: number;
