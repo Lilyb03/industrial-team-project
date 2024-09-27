@@ -1,10 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from 'react-bootstrap/NavBar';
+import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
-export function BottomBar({setPage}: {setPage: (pageNumber: number) => void}) {
-    return (
+export function BottomBar({ setPage }: { setPage: (pageNumber: number) => void }) {
+  return (
     <>
       <Navbar className="bg-body-secondary fixed-bottom">
         <Container>
@@ -15,5 +15,5 @@ export function BottomBar({setPage}: {setPage: (pageNumber: number) => void}) {
         </Container>
       </Navbar>
     </>
-    );
-  }
+  );
+}
