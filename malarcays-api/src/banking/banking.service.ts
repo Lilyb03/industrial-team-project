@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { EventEmitter } from 'events';
+import { fromEvent, Observable, map } from 'rxjs';
 
 import { sql, Account, Company, Transaction } from '../utils/db';
 import { AccountData } from '../utils/api';
@@ -8,6 +10,12 @@ import { BalanceDTO } from './dtos/balance.dto';
 
 @Injectable()
 export class BankingService {
+  private readonly transactionEmitter: EventEmitter;
+
+  constructor() {
+    this.transactionEmitter = new EventEmitter();
+  }
+
   async getBalance(body: BalanceDTO, res: Response): Promise<object> {
     /** 
     * Function to get the balance of an account
@@ -62,13 +70,13 @@ export class BankingService {
 
     // convert the request body into something useful
     let transactionData: Transaction = {
-      sender_account: body.sender,
-      receiver_account: body.recipient,
+      sender_account: parseInt(body.sender.toString()),
+      receiver_account: parseInt(body.recipient.toString()),
       amount: body.amount
     };
 
     // query the database for the account data
-    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array(${transactionData.sender_account}, ${transactionData.receiver_account}), account.account_number);`;
+    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array[${transactionData.sender_account}, ${transactionData.receiver_account}]::int[], account.account_number);`;
 
     // ensure enough accounts are returned from the database
     if ((accountData.length != 2 && transactionData.sender_account != 0) || accountData.length == 0) {
@@ -124,11 +132,24 @@ export class BankingService {
     // add transaction row into database table
     await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
 
+    // emit transaction data to recipient
+    console.log(`sent event through channel: ${transactionData.receiver_account}`)
+    this.transactionEmitter.emit(transactionData.receiver_account.toString(), transactionData);
+
     // return relevant object to client
     return {
       "type": 0,
       "message": "Success",
       "data": transactionData
     }
+  }
+
+  subscribeTransactionEvents(account: number): Observable<any> {
+    console.log(`subscribed to events for account ${account}`);
+    return fromEvent(this.transactionEmitter, account.toString()).pipe(
+      map((payload) => ({
+        data: JSON.stringify(payload),
+      }))
+    );
   }
 }
