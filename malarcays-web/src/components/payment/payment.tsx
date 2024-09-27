@@ -25,6 +25,7 @@ function Payment({setPage}: {setPage: (pageNumber: number) => void}){
         }
         else
         {
+          
           //magic happens here it should probaby replace stuff beg Lily on how to actually change the content
         }
     
@@ -48,8 +49,7 @@ function Payment({setPage}: {setPage: (pageNumber: number) => void}){
                 <InputGroup.Text>£</InputGroup.Text>
                 <Form.Control name='amt' type="number" placeholder="Amount" />
                 </InputGroup>
-                <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="IOU" />
-                {/*idk why this doesnt stretch to fill the spot and Im too eppy to be bothered right now*/}
+                <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="Payment Reference" />
                 <Button id='butt' className='mt-3' variant='primary' type='submit'>Continue</Button>
                 </Form>
               </Container>
