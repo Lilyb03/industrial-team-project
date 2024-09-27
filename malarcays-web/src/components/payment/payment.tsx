@@ -37,24 +37,18 @@ function Payment({setPage}: {setPage: (pageNumber: number) => void}){
             <Stack gap={2}>
               {/* should send user back to main */}
               <Button className='m-3' id='backbutt' variant="light" onClick={() => setPage(0)}><Image src='/img/back.svg' /></Button>
-              <h2>Send Payment</h2>
+              
               <Container className='ml-3 mr-3 d-grid p-3' id='box'>
+              <h2>Make a Payment</h2>
                 {/*these will need to remember their feilds ofc*/}
                 <Form onSubmit={handleSubmit}>
-                <p id='perchText'>Payee:</p>
-                <Form.Control name='payee' type="text" placeholder="Payee Name"/>
-                <br />
-                <p id='perchText'>Account:</p>
-                <Form.Control name='acc' type="text" placeholder="Payee Account Number" />
-                <br />
-                <p id='perchText'>Amount:</p>
-                <InputGroup>
+                <Form.Control className="mt-2 mb-2" name='payee' type="text" placeholder="Payee Name"/>
+                <Form.Control className="mt-2 mb-2" name='acc' type="text" placeholder="Payee Account Number" />
+                <InputGroup className="mt-2 mb-2">
                 <InputGroup.Text>£</InputGroup.Text>
                 <Form.Control name='amt' type="number" placeholder="Amount" />
                 </InputGroup>
-                <br />
-                <p id='perchText'>Payment Reference:</p>
-                <Form.Control name='ref' type="text" placeholder="IOU" />
+                <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="IOU" />
                 {/*idk why this doesnt stretch to fill the spot and Im too eppy to be bothered right now*/}
                 <Button id='butt' className='mt-3' variant='primary' type='submit'>Continue</Button>
                 </Form>
