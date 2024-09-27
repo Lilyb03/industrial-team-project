@@ -2,6 +2,17 @@ service: malarcays-api
 
 plugins:
   - serverless-offline
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: api.malarcays.uk
+    basePath: ""
+    stage: "dev"
+    createRoute53Record: true
+    allowPathMatching: true
+    apiType: rest
+    certificateName: "*.malarcays.uk"
 
 provider:
   name: aws
@@ -13,10 +24,14 @@ functions:
   main:
     handler: dist/serverless.handler
     events:
-      - http: ANY /
-      - http: ANY /{proxy+}
+      - http:
+          path: /
+          method: any
+      - http:
+          path: /{proxy+}
+          method: any
     layers:
-      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:1
+      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:2
 
 package:
   exclude:
