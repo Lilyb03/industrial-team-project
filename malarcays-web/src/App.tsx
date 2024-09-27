@@ -1,17 +1,23 @@
 //import './App.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Stack from 'react-bootstrap/Stack';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Image from 'react-bootstrap/Image';
-import Button from 'react-bootstrap/Button';
-import Navbar from 'react-bootstrap/Navbar';
-import Col from 'react-bootstrap/Col';
-//import Row from 'react-bootstrap/Row';
-import ProgressBar from 'react-bootstrap/ProgressBar';
+import { BottomBar } from './components/bottombar.tsx';
+import { TopBar } from './components/topbar.tsx';
+import { TransactionsPage } from './components/transactions/transactions_page.tsx';
+
+// import Stack from 'react-bootstrap/Stack';
+// import Container from 'react-bootstrap/Container';
+// import Form from 'react-bootstrap/Form';
+// import ListGroup from 'react-bootstrap/ListGroup';
+// import Image from 'react-bootstrap/Image';
+// import Button from 'react-bootstrap/Button';
+// import Navbar from 'react-bootstrap/Navbar';
+// import Col from 'react-bootstrap/Col';
+// import Row from 'react-bootstrap/Row';
+// import ProgressBar from 'react-bootstrap/ProgressBar';
+
+import { getDetails } from './services/details.tsx';
 
 const accountDetails: string = '{' +
   '"type": 0,' +
@@ -61,43 +67,7 @@ function CalculateGreenStuff(score: number){
 
 CalculateGreenStuff(Details.account_data.green_score);
 
-function TopBar(){
 
-  return (
-    <>
-    <Navbar className="bg-body-secondary">
-          <Container fluid className="text-center">
-            <Col>
-              <ProgressBar striped variant="success" className="border" now={CalculateGreenStuff(1200)}/>
-            </Col>
-
-            <Col>
-              Hugh Mann
-            </Col>
-            
-            <Col>
-              Green Level: 1
-            </Col>
-          </Container>
-        </Navbar>
-        </>
-  );
-}
-
-function BottomBar({setPage}: {setPage: (pageNumber: number) => void}) {
-  return (
-  <>
-    <Navbar className="bg-body-secondary fixed-bottom">
-      <Container>
-        <Button variant="secondary" onClick={() => setPage(0)}>Profile</Button>
-        <Button variant="secondary" onClick={() => setPage(1)}>Activity</Button>
-        <Button variant="secondary" onClick={() => setPage(2)}>Settings</Button>
-        <Button variant="secondary" onClick={() => setPage(3)}>More</Button>
-      </Container>
-    </Navbar>
-  </>
-  );
-}
 
 function MainPage({page}: {page: number}){
 
@@ -105,7 +75,7 @@ function MainPage({page}: {page: number}){
     case 0:
       return (
         <>
-        <TransactionsPage />
+        <TransactionsPage details={Details}/>
         </>
       );
     break;
@@ -134,36 +104,6 @@ function MainPage({page}: {page: number}){
   
 }
 
-function TransactionsPage() {
-
-  return (
-   <>
-      <Stack gap={2}>
-        {/* account number will need to be changed with an api call */}
-        <p id='accNum'>Account: <strong>C123456</strong></p>
-        <Container className='d-grid' id='box'>
-          {/* also needs to be changed based on api call */}
-          <h2 id='admTotal'>£10,000.00</h2>
-          <Button id='butt' variant="primary" className='mb-2'>Make Payment</Button>
-        </Container>
-        <Container className='ml-3 mr-3 p-3' id='box'>
-          {/* in theory this will sort the transactions */}
-        <Form.Select aria-label="Sort Options">
-          <option value="1">Recent</option>
-          <option value="2">Highest Score</option>
-          <option value="3">Lowest Score</option>
-        </Form.Select>
-        {/* This is the list of transactions, currently there is a dummy one, this code will need to be updated based off api calls and have its color
-        changed based off RAW score and icon changed as well */}
-        <ListGroup as='ul'>
-          <ListGroup.Item id='perchText' as='li' variant="danger"><strong>-£100.00</strong> Company Name <Image id='img' src="/img/down.svg" roundedCircle /></ListGroup.Item>
-        </ListGroup>
-        </Container>
-        </Stack>
-   </>
-  )
-}
-
 // function FetchUser(){
 //   const apiCall = "https://api.malarcays.uk/balance?account=91";
 
@@ -176,11 +116,22 @@ function TransactionsPage() {
 
 function App() {
   const [page, setPage] = useState(0);
-  
+
+  const [details, setDetails] = useState();
+
+  // useEffect(() => {
+  //     getDetails()
+  //       .then(data => {
+  //         setDetails(data)
+  //       })
+  // }, []);
+
+  // console.log(details);
+
   return (
     <>
       <header>
-        <TopBar />
+        <TopBar perc={60} name={"hugh mann"} level={3} />
       </header>
         <MainPage page={page} />
       <footer>
