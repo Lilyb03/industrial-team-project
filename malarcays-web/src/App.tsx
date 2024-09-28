@@ -18,6 +18,7 @@ import { TransactionsPage } from './components/transactions/transactions_page.ts
 // import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import  Payment  from './components/payment/payment.tsx';
+import { LoginPage } from './components/login/login.tsx';
 import { getDetails } from './services/details.tsx';
 
 const accountDetails: string = `{
@@ -223,6 +224,8 @@ function App() {
 
   const [details, setDetails] = useState();
 
+  const [loggedIn, setLoggedIn] = useState(false);
+
   // useEffect(() => {
   //     getDetails()
   //       .then(data => {
@@ -231,6 +234,15 @@ function App() {
   // }, []);
 
   // console.log(details);
+
+  if (!loggedIn){
+    return(
+      <>
+          <LoginPage setLoggedIn={setLoggedIn}/>
+      </>
+    )
+
+  }
 
   return (
     <>
