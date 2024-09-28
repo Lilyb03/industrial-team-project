@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { EventEmitter } from 'events';
+import { fromEvent, Observable, map } from 'rxjs';
 
 import { sql, Account, Company, Transaction } from '../utils/db';
 import { AccountData } from '../utils/api';
@@ -8,6 +10,12 @@ import { BalanceDTO } from './dtos/balance.dto';
 
 @Injectable()
 export class BankingService {
+  private readonly transactionEmitter: EventEmitter;
+
+  constructor() {
+    this.transactionEmitter = new EventEmitter();
+  }
+
   async getBalance(body: BalanceDTO, res: Response): Promise<object> {
     /** 
     * Function to get the balance of an account
@@ -32,7 +40,9 @@ export class BankingService {
     let account: Account = data[0];
 
     // query the database for transaction data
-    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number};`;
+    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number};`;
+
+    // console.log(transactions);
 
     // put together AccountData object to be returned to the client
     let accountData: AccountData = {
@@ -62,13 +72,14 @@ export class BankingService {
 
     // convert the request body into something useful
     let transactionData: Transaction = {
-      sender_account: body.sender,
-      receiver_account: body.recipient,
-      amount: body.amount
+      sender_account: parseInt(body.sender.toString()),
+      receiver_account: parseInt(body.recipient.toString()),
+      amount: body.amount,
+      reference: body.reference
     };
 
     // query the database for the account data
-    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array(${transactionData.sender_account}, ${transactionData.receiver_account}), account.account_number);`;
+    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id INNER JOIN details ON account.details_id=details.details_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array[${transactionData.sender_account}, ${transactionData.receiver_account}]::int[], account.account_number);`;
 
     // ensure enough accounts are returned from the database
     if ((accountData.length != 2 && transactionData.sender_account != 0) || accountData.length == 0) {
@@ -84,7 +95,8 @@ export class BankingService {
 
     // carry out transaction in account data
     if (transactionData.sender_account === 0) {
-      receiverAccount = accountData[0];
+      senderAccount = accountData[0];
+      receiverAccount = accountData[1];
       receiverAccount.amount += transactionData.amount;
     } else {
       senderAccount = accountData[0];
@@ -101,6 +113,10 @@ export class BankingService {
       senderAccount.amount -= transactionData.amount;
       receiverAccount.amount += transactionData.amount;
     }
+
+    // set account names in transaction data
+    transactionData.sender_name = [senderAccount.name, senderAccount.last_name].join(" ");
+    transactionData.receiver_name = [receiverAccount.name, receiverAccount.last_name].join(" ");
 
     // work out greenscore
     let greenscore: number;
@@ -122,13 +138,22 @@ export class BankingService {
     }
 
     // add transaction row into database table
-    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
+    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
     // return relevant object to client
     return {
       "type": 0,
       "message": "Success",
       "data": transactionData
+    }
+  }
+
+  async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
+    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE (sender_account=${body.account} OR receiver_account=${body.account}) AND transaction.date_time > now() - interval '5 seconds';`;
+
+    return {
+      "type": 0,
+      "data": transactions
     }
   }
 }

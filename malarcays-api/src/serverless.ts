@@ -10,8 +10,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
 	await app.init();
+	app.enableCors();
 
 	const expressApp = app.getHttpAdapter().getInstance();
 	return serverlessExpress({ app: expressApp });

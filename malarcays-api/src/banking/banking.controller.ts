@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpStatus, Res, Req, Get, Query } from '@nestjs/common';
+import { Body, Controller, Post, HttpStatus, Res, Req, Get, Query, Param } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { BankingService } from './banking.service';
@@ -65,6 +65,19 @@ export class BankingController {
         "type": 1,
         "message": `Could not create transaction: ${error.message}`
       })
+    }
+  }
+
+  @Get('transaction-events')
+  async transactionEvents(@Query() body: BalanceDTO, @Res() res: Response): Promise<Response> {
+    try {
+      const result = await this.bankingService.transactionEvents(body, res);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        "type": 1,
+        "message": `Could not fetch transactions: ${error.message}`
+      });
     }
   }
 }

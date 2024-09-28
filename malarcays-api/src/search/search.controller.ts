@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpStatus, Res, Req, Get } from '@nestjs/common';
+import { Body, Controller, Post, HttpStatus, Res, Req, Get, Query } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { SearchService } from './search.service';
@@ -10,7 +10,7 @@ export class SearchController {
   constructor(private searchService: SearchService) { }
 
   @Get('account')
-  async accountSearch(@Body() body: AccountDTO, @Res() res: Response): Promise<Response> {
+  async accountSearch(@Query() body: AccountDTO, @Res() res: Response): Promise<Response> {
     /** 
     * Account search route handler for /search/account route
     * @param {AccountDTO} body - request body in the form of account search data
