@@ -6,6 +6,24 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 
+function makePaymentCall(accountNumber: string, recipient: string, transactionAmount: number, reference: string){
+    console.log(accountNumber);
+    const transactionURL = "https://api.malarcays.uk/transaction/";
+
+    fetch (transactionURL, {
+      method: "POST",
+      headers: {
+        'Content-Type' : 'application/json'
+      },
+      body: `{"sender":` + accountNumber
+      + `,"recipient":` + recipient
+      + `,"amount":` + transactionAmount
+      + `}`
+    })
+    .then(res => res.text())
+    .then(res => console.log(res))
+}
+
 function Payment({setPage, accountNumber}: {setPage: (pageNumber: number) => void, accountNumber: string}){
     const handleSubmit = (event: any) => {
         event.preventDefault();
@@ -29,32 +47,19 @@ function Payment({setPage, accountNumber}: {setPage: (pageNumber: number) => voi
         transactionAmount = (transactionAmount*100);
 
         //check account number against payee name
-        // const checkPayee = "https://api.malarcays.uk/search/account?account=" + entry.acc;
+        const checkPayee = "https://api.malarcays.uk/search/account?account=" + entry.acc;
 
-        // fetch (checkPayee)
-        // .then((resp) => resp.json())
-        // .then(function(data)){
-        //   if (data.){
-
-        //   }
-        // }
-
-          const transactionURL = "https://api.malarcays.uk/transaction/";
-
-          fetch (transactionURL, {
-            method: "POST",
-            headers: {
-              'Content-Type' : 'application/json'
-            },
-            body: `{"sender":` + accountNumber
-            + `,"recipient":` + entry.acc
-            + `,"amount":` + String(transactionAmount)
-            + `}`
-          })
-          .then(res => res.text())
-          .then(res => console.log(res))
-          //magic happens here it should probaby replace stuff beg Lily on how to actually change the content
-    
+        fetch (checkPayee)
+        .then((resp) => resp.json())
+        .then(function(data){
+          const fullName = data.accounts[0].name + " " + data.accounts[0].last_name;
+          if (fullName == entry.payee){
+            makePaymentCall(accountNumber, String(entry.acc), transactionAmount, String(entry.ref));
+          } else{
+            console.log("Error");
+          }
+        })
+          
       }
     
       return (
@@ -73,7 +78,7 @@ function Payment({setPage, accountNumber}: {setPage: (pageNumber: number) => voi
                 <Form.Control className="mt-2 mb-2" name='acc' type="text" placeholder="Payee Account Number" />
                 <InputGroup className="mt-2 mb-2">
                 <InputGroup.Text>£</InputGroup.Text>
-                <Form.Control name='amt' type="number" placeholder="Amount" />
+                <Form.Control name='amt' type="number" placeholder="Amount" step="0.01" />
                 </InputGroup>
                 <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="Payment Reference" />
                 <Button id='butt' className='mt-3' variant='primary' type='submit'>Continue</Button>
