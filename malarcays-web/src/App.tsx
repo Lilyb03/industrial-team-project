@@ -26,7 +26,7 @@ const accountDetails: string = `{
   "account_data": {
     "account_number": 91,
     "balance": 2100,
-    "green_score": 0,
+    "green_score": 1200,
     "permissions": "customer",
     "transactions": [
       {
@@ -144,11 +144,14 @@ const accountDetails: string = `{
 
 const Details = JSON.parse(accountDetails);
 
-function CalculateGreenStuff(score: number) {
+function CalculateGreenLevel(score: number){
+    return Math.floor(
+      Math.pow(score, 1 / 1.6) * 0.3);
+}
 
-  //find user level
-  const level: number = Math.floor(
-    Math.pow(score, 1 / 1.6) * 0.3);
+function CalculateGreenStuff(score: number) {
+  
+  const level = CalculateGreenLevel(score);
 
   const currentLevelBoundary = Math.pow((level / 0.3), 1.6);
 
@@ -232,7 +235,7 @@ function App() {
   return (
     <>
       <header>
-        <TopBar perc={60} name={"hugh mann"} level={3} />
+        <TopBar perc={CalculateGreenStuff(Details.account_data.green_score)} name={Details.account_data.name} level={CalculateGreenLevel(Details.account_data.green_score)} />
       </header>
         <MainPage page={page} setPage={setPage} />
       <footer>

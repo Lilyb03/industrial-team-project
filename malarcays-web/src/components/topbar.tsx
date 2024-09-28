@@ -11,15 +11,16 @@ export function TopBar({ perc, name, level }: {perc: number, name: string, level
       <Navbar className="bg-body-secondary">
             <Container fluid className="text-center">
               <Col>
-                <ProgressBar striped variant="success" className="border" now={perc}/>
+              {name}
+                
               </Col>
   
               <Col>
-                {name}
+              Level: {level}
               </Col>
               
               <Col>
-                Green Level: {level}
+                <ProgressBar striped variant="success" className="border" now={perc}/>
               </Col>
             </Container>
           </Navbar>

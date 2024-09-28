@@ -45,6 +45,7 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
         <p id='accNum'>Account: <strong>{accountData.account_number.toString().padStart(9, '0')}</strong></p>
         <Container className='d-grid' id='box'>
           {/* also needs to be changed based on api call */}
+          <h4>Account Balance:</h4>
           <h2 id='admTotal'>£{(balance / 100).toLocaleString('en', formatOptions)}</h2>
           <Button id='butt' variant="primary" className='mb-2' onClick={() => setPage(4)}>Make Payment</Button>
         </Container>
