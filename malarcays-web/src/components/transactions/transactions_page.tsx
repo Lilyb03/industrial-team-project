@@ -7,7 +7,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import '../../index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export function TransactionsPage({details}: {details: JSON}) {
+export function TransactionsPage({details, setPage}: {details: JSON, setPage: (pageNumber: number) => void }) {
 
     return (
      <>
@@ -17,7 +17,7 @@ export function TransactionsPage({details}: {details: JSON}) {
           <Container className='d-grid' id='box'>
             {/* also needs to be changed based on api call */}
             <h2 id='admTotal'>£10,000.00</h2>
-            <Button id='butt' variant="primary" className='mb-2'>Make Payment</Button>
+            <Button id='butt' variant="primary" className='mb-2' onClick={() => setPage(4)}>Make Payment</Button>
           </Container>
           <Container className='ml-3 mr-3 p-3' id='box'>
             {/* in theory this will sort the transactions */}
