@@ -3,27 +3,31 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Image from 'react-bootstrap/Image';
 import '../../index.css';
 
-function Transaction(companyName: string, amount: number, RAG: number){
+export function Transaction({ displayName, reference, amount, RAG, isInbound }: { displayName: string, reference: string, amount: number, RAG: number, isInbound: boolean }) {
 
 
     var imgType: string;
     var variantType: string;
 
-    if (RAG < 0.5){
+    if (RAG == -1) {
+        imgType = '../../../img/flat.svg';
+        variantType = 'light'
+    }
+    else if (RAG < 0.5) {
         imgType = '../../../img/down.svg';
         variantType = 'danger';
-    } else if (RAG > 0.5){
+    } else if (RAG > 0.5) {
         imgType = '../../../img/up.svg';
         variantType = 'success';
-    } else{
+    } else {
         imgType = '../../../img/flat.svg';
-        variantType = 'light';
+        variantType = 'warning';
     }
 
-    return (    
+    return (
         <ListGroup.Item id='perchText' as='li' variant={variantType}>
-        <strong>{amount/100}</strong> {companyName}
-        <Image id='img' src={imgType} roundedCircle />
+            <strong>{isInbound ? '+' : '-'}£{amount / 100}</strong> {displayName} - {reference}
+            <Image id='img' src={imgType} roundedCircle />
         </ListGroup.Item>
     );
 }

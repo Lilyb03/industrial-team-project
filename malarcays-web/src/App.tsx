@@ -19,49 +19,142 @@ import { TransactionsPage } from './components/transactions/transactions_page.ts
 
 import { getDetails } from './services/details.tsx';
 
-const accountDetails: string = '{' +
-  '"type": 0,' +
-  '"message": "Success",' +
-  '"account_data": {' +
-    '"account_number": 91,' +
-    '"balance": 1400,' +
-    '"green_score": 1259,' +
-    '"permissions": "customer",' +
-    '"transactions": [' +
-      '{' +
-        '"transaction_id": 2,' +
-        '"sender_account": 90,' +
-        '"receiver_account": 91,' +
-        '"amount": 100,' +
-        '"date_time": "2024-09-25T10:50:49.834Z",' +
-        '"greenscore": 0' +
-      '},' +
-      '{' +
-        '"transaction_id": 3,' +
-        '"sender_account": 90,' +
-        '"receiver_account": 91,' +
-        '"amount": 100,' +
-        '"date_time": "2024-09-25T10:51:55.884Z",' +
-        '"greenscore": 0' +
-      '}' +
-    ']' +
-  '}' +
-'}';
+const accountDetails: string = `{
+  "type": 0,
+  "message": "Success",
+  "account_data": {
+    "account_number": 91,
+    "balance": 2100,
+    "green_score": 0,
+    "permissions": "customer",
+    "transactions": [
+      {
+        "transaction_id": 2,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-25T09:50:49.834Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 3,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-25T09:51:55.884Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 4,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-27T10:37:32.775Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 5,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-27T10:41:37.950Z",
+        "greenscore": 0.5,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91,
+        "reference": "test reference"
+      },
+      {
+        "transaction_id": 6,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-27T10:42:46.838Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 7,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-27T10:44:48.891Z",
+        "greenscore": 0.9,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 8,
+        "sender_account": 90,
+        "receiver_account": 91,
+        "amount": 100,
+        "date_time": "2024-09-27T10:47:45.162Z",
+        "greenscore": -1,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 9,
+        "sender_account": 91,
+        "receiver_account": 90,
+        "amount": 100,
+        "date_time": "2024-09-27T10:55:01.162Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      },
+      {
+        "transaction_id": 10,
+        "sender_account": 91,
+        "receiver_account": 90,
+        "amount": 100,
+        "date_time": "2024-09-27T10:55:47.332Z",
+        "greenscore": 0,
+        "sender_name": "Brittany Jimenez",
+        "sender_num": 90,
+        "receiver_name": "Tabitha Butler",
+        "receiver_num": 91
+      }
+    ]
+  }
+}`;
 
 const Details = JSON.parse(accountDetails);
 
-function CalculateGreenStuff(score: number){
+function CalculateGreenStuff(score: number) {
 
   //find user level
   const level: number = Math.floor(
-    Math.pow(score ,1/1.6) * 0.3);
+    Math.pow(score, 1 / 1.6) * 0.3);
 
-  const currentLevelBoundary = Math.pow((level/0.3), 1.6);
+  const currentLevelBoundary = Math.pow((level / 0.3), 1.6);
 
-  const nextLevelBoundary = Math.pow(((level+1)/0.3), 1.6);
+  const nextLevelBoundary = Math.pow(((level + 1) / 0.3), 1.6);
 
   const percDiff: number = ((score - currentLevelBoundary) / (nextLevelBoundary - currentLevelBoundary)) * 100;
-  
+
   return percDiff;
 }
 
@@ -69,39 +162,39 @@ CalculateGreenStuff(Details.account_data.green_score);
 
 
 
-function MainPage({page}: {page: number}){
+function MainPage({ page }: { page: number }) {
 
-  switch(page) {
+  switch (page) {
     case 0:
       return (
         <>
-        <TransactionsPage details={Details}/>
+          <TransactionsPage accountData={Details.account_data} />
         </>
       );
-    break;
+      break;
     case 1:
       return (
         <>
-        <h1>second page</h1>
+          <h1>second page</h1>
         </>
       );
-    break;
+      break;
     case 2:
       return (
         <>
-        <h1>third page</h1>
+          <h1>third page</h1>
         </>
       );
-    break;
+      break;
     case 3:
       return (
         <>
-        <h1>fourth page</h1>
+          <h1>fourth page</h1>
         </>
       );
-    break;
+      break;
   }
-  
+
 }
 
 // function FetchUser(){
@@ -133,10 +226,10 @@ function App() {
       <header>
         <TopBar perc={60} name={"hugh mann"} level={3} />
       </header>
-        <MainPage page={page} />
+      <MainPage page={page} />
       <footer>
-        <BottomBar setPage={setPage}/>
-      </footer>  
+        <BottomBar setPage={setPage} />
+      </footer>
     </>
   );
 }
