@@ -19,6 +19,11 @@ export class SearchService {
     // create blank query
     let query: any = sql``;
 
+    // ensure at least one of account or name is passed
+    if (!(body.account || body.name)) {
+      throw new Error("At least one of 'name' or 'account' must be present");
+    }
+
     // handle if search based on account number is requested
     if (body.account) {
       // convert account number from query into something useful
@@ -39,7 +44,6 @@ export class SearchService {
       // add to query
       query = sql`${query} concat(details.name, details.last_name) LIKE ${name})`;
     }
-
 
     // query database for account data, limit to 5 responses
     let data: Account[] = (await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id INNER JOIN details ON account.details_id=details.details_id WHERE ${query};`).slice(0, 4);
