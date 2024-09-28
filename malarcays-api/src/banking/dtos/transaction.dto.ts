@@ -12,4 +12,8 @@ export class TransactionDTO {
 	@IsNotEmpty()
 	@IsNumber()
 	amount: number;
+
+	@IsNotEmpty()
+	@IsString()
+	reference: string;
 }

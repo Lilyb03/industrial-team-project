@@ -1,10 +1,9 @@
-import { Body, Controller, Post, HttpStatus, Res, Req, Get, Query, Sse, Param } from '@nestjs/common';
+import { Body, Controller, Post, HttpStatus, Res, Req, Get, Query, Param } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { BankingService } from './banking.service';
 import { TransactionDTO } from './dtos/transaction.dto';
 import { BalanceDTO } from './dtos/balance.dto';
-import { Observable } from 'rxjs';
 
 @Controller()
 export class BankingController {
@@ -67,12 +66,5 @@ export class BankingController {
         "message": `Could not create transaction: ${error.message}`
       })
     }
-  }
-
-  @Sse('transaction-events/:account')
-  transactionEvents(@Param('account') accountParam: string) {
-    let account: number = parseInt(accountParam.toString());
-
-    return this.bankingService.subscribeTransactionEvents(account);
   }
 }

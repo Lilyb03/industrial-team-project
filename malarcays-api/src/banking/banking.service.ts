@@ -74,7 +74,8 @@ export class BankingService {
     let transactionData: Transaction = {
       sender_account: parseInt(body.sender.toString()),
       receiver_account: parseInt(body.recipient.toString()),
-      amount: body.amount
+      amount: body.amount,
+      reference: body.reference
     };
 
     // query the database for the account data
@@ -132,7 +133,7 @@ export class BankingService {
     }
 
     // add transaction row into database table
-    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : 0})`;
+    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
     // emit transaction data to recipient
     console.log(`sent event through channel: ${transactionData.receiver_account}`)
