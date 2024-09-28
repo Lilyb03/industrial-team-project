@@ -6,7 +6,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-function Payment({setPage}: {setPage: (pageNumber: number) => void}){
+function Payment({setPage, accountNumber}: {setPage: (pageNumber: number) => void, accountNumber: string}){
     const handleSubmit = (event: any) => {
         event.preventDefault();
     
@@ -17,17 +17,43 @@ function Payment({setPage}: {setPage: (pageNumber: number) => void}){
         
         //down here will be some checks with the database if something is missmatched maybe there should be a warning but idk how we handle
         //new accounts, for now Ill just put in somthing that checks for empty feilds
-        let x = parseFloat(String(entry.amt));
-        if (entry.payee === '' || entry.acc === '' || x <= 0)
+        let transactionAmount = Math.floor(parseFloat(String(entry.amt)));
+        if (entry.payee === '' || entry.acc === '' || transactionAmount <= 0)
         {
+          
           alert('One or more entries are invalid');
           //alert stops the thing make more professional later
         }
-        else
-        {
-          
+
+        //convert to pence
+        transactionAmount = (transactionAmount*100);
+
+        //check account number against payee name
+        // const checkPayee = "https://api.malarcays.uk/search/account?account=" + entry.acc;
+
+        // fetch (checkPayee)
+        // .then((resp) => resp.json())
+        // .then(function(data)){
+        //   if (data.){
+
+        //   }
+        // }
+
+          const transactionURL = "https://api.malarcays.uk/transaction/";
+
+          fetch (transactionURL, {
+            method: "POST",
+            headers: {
+              'Content-Type' : 'application/json'
+            },
+            body: `{"sender":` + accountNumber
+            + `,"recipient":` + entry.acc
+            + `,"amount":` + String(transactionAmount)
+            + `}`
+          })
+          .then(res => res.text())
+          .then(res => console.log(res))
           //magic happens here it should probaby replace stuff beg Lily on how to actually change the content
-        }
     
       }
     

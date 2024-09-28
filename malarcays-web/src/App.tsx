@@ -105,7 +105,7 @@ function MainPage({page, setPage}: {page: number, setPage: (pageNumber: number) 
     case 4:
       return (
         <>
-        <Payment setPage={setPage}/>
+        <Payment setPage={setPage} accountNumber={Details.account_data.account_number}/>
         </>
       )
   }
