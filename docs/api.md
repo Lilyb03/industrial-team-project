@@ -52,7 +52,8 @@ Example:
 			"sender_account": 000000000,
 			"recipient_account": 000000001,
 			"greenscore": 0,
-			"amount": 100
+			"amount": 100,
+			"reference": "example"
 		}
 	]
 }
@@ -76,6 +77,8 @@ Keys:
 
 `amount` integer - the amount transferred in pence
 
+`reference` string - the transaction reference
+
 Example:
 
 ```json
@@ -85,7 +88,8 @@ Example:
 	"sender_account": 000000000,
 	"recipient_account": 000000001,
 	"greenscore": 0,
-	"amount": 100
+	"amount": 100,
+	"reference": "example"
 }
 ```
 
@@ -289,6 +293,8 @@ Required JSON keys:
 `recipient` integer - account number of recipient
 
 `amount` integer - amount to be transferred in pence
+
+`reference` string - the transaction reference to be recorded
 
 #### Response
 

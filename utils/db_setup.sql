@@ -45,6 +45,7 @@ CREATE TABLE transaction (
   amount INT NOT NULL,
   date_time TIMESTAMP NOT NULL,
   greenscore REAL NOT NULL DEFAULT 0.0,
+  reference VARCHAR(255),
   PRIMARY KEY (transaction_id),
   CONSTRAINT fk_sender_account FOREIGN KEY (sender_account) REFERENCES account (account_number),
   CONSTRAINT fk_receiver_account FOREIGN KEY (receiver_account) REFERENCES account (account_number)
