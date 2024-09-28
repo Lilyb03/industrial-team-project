@@ -51,10 +51,8 @@ def insert_company_data(cur):
 
 
 def generate_customer_data(num_entries, num_companies):
-    details_query = "INSERT INTO details (details_id, name, last_name) VALUES "
-    account_query = (
-        "INSERT INTO account (account_number, details_id, type_id, amount) VALUES "
-    )
+    details_query = "INSERT INTO details (details_id, name, last_name) VALUES (0, 'Malarcays', NULL),"
+    account_query = "INSERT INTO account (account_number, details_id, type_id, amount) VALUES (0, 0, 1, 0),"
 
     for i in range(num_entries):
         first_name = fake.first_name()
