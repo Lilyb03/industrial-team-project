@@ -79,7 +79,7 @@ export class BankingService {
     };
 
     // query the database for the account data
-    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array[${transactionData.sender_account}, ${transactionData.receiver_account}]::int[], account.account_number);`;
+    let accountData: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id INNER JOIN details ON account.details_id=details.details_id WHERE account.account_number=${transactionData.sender_account} OR account.account_number=${transactionData.receiver_account} ORDER BY array_position(array[${transactionData.sender_account}, ${transactionData.receiver_account}]::int[], account.account_number);`;
 
     // ensure enough accounts are returned from the database
     if ((accountData.length != 2 && transactionData.sender_account != 0) || accountData.length == 0) {
@@ -95,7 +95,8 @@ export class BankingService {
 
     // carry out transaction in account data
     if (transactionData.sender_account === 0) {
-      receiverAccount = accountData[0];
+      senderAccount = accountData[0];
+      receiverAccount = accountData[1];
       receiverAccount.amount += transactionData.amount;
     } else {
       senderAccount = accountData[0];
@@ -112,6 +113,10 @@ export class BankingService {
       senderAccount.amount -= transactionData.amount;
       receiverAccount.amount += transactionData.amount;
     }
+
+    // set account names in transaction data
+    transactionData.sender_name = [senderAccount.name, senderAccount.last_name].join(" ");
+    transactionData.receiver_name = [receiverAccount.name, receiverAccount.last_name].join(" ");
 
     // work out greenscore
     let greenscore: number;
