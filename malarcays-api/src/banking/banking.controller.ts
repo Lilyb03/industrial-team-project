@@ -67,4 +67,17 @@ export class BankingController {
       })
     }
   }
+
+  @Get('transaction-events')
+  async transactionEvents(@Query() body: BalanceDTO, @Res() res: Response): Promise<Response> {
+    try {
+      const result = await this.bankingService.transactionEvents(body, res);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        "type": 1,
+        "message": `Could not fetch transactions: ${error.message}`
+      });
+    }
+  }
 }

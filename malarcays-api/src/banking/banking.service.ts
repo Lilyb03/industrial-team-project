@@ -135,10 +135,6 @@ export class BankingService {
     // add transaction row into database table
     await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
-    // emit transaction data to recipient
-    console.log(`sent event through channel: ${transactionData.receiver_account}`)
-    this.transactionEmitter.emit(transactionData.receiver_account.toString(), transactionData);
-
     // return relevant object to client
     return {
       "type": 0,
@@ -147,12 +143,12 @@ export class BankingService {
     }
   }
 
-  subscribeTransactionEvents(account: number): Observable<any> {
-    console.log(`subscribed to events for account ${account}`);
-    return fromEvent(this.transactionEmitter, account.toString()).pipe(
-      map((payload) => ({
-        data: JSON.stringify(payload),
-      }))
-    );
+  async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
+    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE (sender_account=${body.account} OR receiver_account=${body.account}) AND transaction.date_time > now() - interval '60 seconds';`;
+
+    return {
+      "type": 0,
+      "data": transactions
+    }
   }
 }
