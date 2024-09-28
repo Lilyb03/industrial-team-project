@@ -47,6 +47,8 @@ export interface Transaction {
 	transaction_id?: number,
 	sender_account: number,
 	receiver_account: number,
+	sender_name?: string,
+	receiver_name?: string,
 	amount: number,
 	datetime?: Date,
 	greenscore?: number
