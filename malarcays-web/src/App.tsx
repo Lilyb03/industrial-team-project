@@ -17,6 +17,7 @@ import { TransactionsPage } from './components/transactions/transactions_page.ts
 // import Row from 'react-bootstrap/Row';
 // import ProgressBar from 'react-bootstrap/ProgressBar';
 
+import  Payment  from './components/payment/payment.tsx';
 import { getDetails } from './services/details.tsx';
 
 const accountDetails: string = `{
@@ -162,20 +163,20 @@ CalculateGreenStuff(Details.account_data.green_score);
 
 
 
-function MainPage({ page }: { page: number }) {
+function MainPage({page, setPage}: {page: number, setPage: (pageNumber: number) => void}){
 
   switch (page) {
     case 0:
       return (
         <>
-          <TransactionsPage accountData={Details.account_data} />
+          <TransactionsPage accountData={Details.account_data} setPage={setPage} />
         </>
       );
       break;
     case 1:
       return (
         <>
-          <h1>second page</h1>
+        <h1>first page</h1>
         </>
       );
       break;
@@ -192,7 +193,14 @@ function MainPage({ page }: { page: number }) {
           <h1>fourth page</h1>
         </>
       );
-      break;
+    break;
+
+    case 4:
+      return (
+        <>
+        <Payment setPage={setPage} accountNumber={Details.account_data.account_number}/>
+        </>
+      )
   }
 
 }
@@ -226,7 +234,7 @@ function App() {
       <header>
         <TopBar perc={60} name={"hugh mann"} level={3} />
       </header>
-      <MainPage page={page} />
+        <MainPage page={page} setPage={setPage} />
       <footer>
         <BottomBar setPage={setPage} />
       </footer>

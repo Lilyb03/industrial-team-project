@@ -29,7 +29,7 @@ interface AccountData {
   transactions: Array<TransactionInterface>
 }
 
-export function TransactionsPage({ accountData }: { accountData: AccountData }) {
+export function TransactionsPage({ accountData, setPage }: { accountData: AccountData, setPage: (pageNumber: number) => void }) {
   let [balance, setBalance] = useState(accountData.balance);
   let [transactions, setTransactions] = useState(accountData.transactions);
 
@@ -46,7 +46,7 @@ export function TransactionsPage({ accountData }: { accountData: AccountData }) 
         <Container className='d-grid' id='box'>
           {/* also needs to be changed based on api call */}
           <h2 id='admTotal'>£{(balance / 100).toLocaleString('en', formatOptions)}</h2>
-          <Button id='butt' variant="primary" className='mb-2'>Make Payment</Button>
+          <Button id='butt' variant="primary" className='mb-2' onClick={() => setPage(4)}>Make Payment</Button>
         </Container>
         <Container className='ml-3 mr-3 p-3' id='box'>
           {/* in theory this will sort the transactions */}
