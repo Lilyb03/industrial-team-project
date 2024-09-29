@@ -82,14 +82,11 @@ export class AccountsService {
   async login(name: string) {
     try {
       /*quarry to get/fetch account data
-      and procide by joining the account and details table
-      then selects everything from accounts and details
-      where the name matches
+      that match the account number given
       */
       const rows = await sql`
-        SELECT * FROM account a
-        JOIN details d ON a.details_id = d.details_id
-        WHERE d.name = ${name}
+        SELECT * FROM account
+        WHERE account_number = ${name}
       `;
       //if nothing was found return null
       if (rows.length === 0) {
