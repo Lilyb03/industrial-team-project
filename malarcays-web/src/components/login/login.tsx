@@ -55,10 +55,9 @@ export function LoginPage({ setLoggedIn, setDetails }: { setLoggedIn: (logged: b
 
   return (
     <>
-      {/*can't figure out how to make the box centered, will come back to when more crucial work is done*/}
       <Container className="vh-100">
 
-        <Container className='ml-3 mr-3 p-3' id='box'>
+        <Container className='ml-3 mr-3 p-3 translate-middle top-50 start-50 position-absolute' id='box'>
           <Image src='/img/Malarcays.png' className="mb-3" fluid />
           <h2>Sign In</h2>
 

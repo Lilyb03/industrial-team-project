@@ -31,12 +31,12 @@ function TransactionModal(props: any) {
           Transaction Details
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <h4>Transaction Reference: {transaction.reference}</h4>
-        <p>Sender: {transaction.sender_name}</p>
-        <p>Recipient: {transaction.receiver_name}</p>
-        <p>Amount: {formatBalance(transaction.amount)}</p>
-        <p>RAG Score: {transaction.greenscore}</p>
+      <Modal.Body className="text-start">
+        <h4>REF: {transaction.reference}</h4>
+        <p className="text-start">Sender: {transaction.sender_name}</p>
+        <p className="text-start">Recipient: {transaction.receiver_name}</p>
+        <p className="text-start">Amount: {formatBalance(transaction.amount)}</p>
+        <p className="text-start">Green Score: {transaction.greenscore}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
@@ -77,7 +77,7 @@ export function TransactionsPage({ accountData, setAccountData, setPage }: { acc
 
   return (
     <>
-      <Stack gap={2}>
+      <Stack gap={2} className="mb-5">
         <p id='accNum'>Account: <strong>{accountData.account_number.toString().padStart(9, '0')}</strong></p>
         <Container className='d-grid' id='box'>
           <h4>Account Balance:</h4>
