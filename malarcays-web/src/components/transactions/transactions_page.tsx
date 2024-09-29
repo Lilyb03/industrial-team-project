@@ -77,7 +77,7 @@ export function TransactionsPage({ accountData, setAccountData, setPage }: { acc
 
   return (
     <>
-      <Stack gap={2}>
+      <Stack gap={2} className="mb-5">
         <p id='accNum'>Account: <strong>{accountData.account_number.toString().padStart(9, '0')}</strong></p>
         <Container className='d-grid' id='box'>
           <h4>Account Balance:</h4>
