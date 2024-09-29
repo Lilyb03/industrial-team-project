@@ -49,7 +49,7 @@ function MyVerticallyCenteredModal(props: any) {
         <h4>Transaction Reference: {transaction.reference}</h4>
         <p>Sender: {transaction.sender_name}</p>
         <p>Receiver: {transaction.receiver_name}</p>
-        <p>Amount: £{transaction.amount/100}</p>
+        <p>Amount: {transaction.amount}</p>
         <p>RAG Score: {transaction.greenscore}</p>
       </Modal.Body>
       <Modal.Footer>
@@ -64,16 +64,33 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
   const [transactions, setTransactions] = useState(accountData.transactions);
   const [modalShow, setModalShow] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [sortOption, setSortOption] = useState('1');
 
   let formatOptions = {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }
+  };
 
   const handleItemClick = (transaction: any) => {
     setSelectedTransaction(transaction);
     setModalShow(true);
   };
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(e.target.value);
+  };
+
+
+  const sortedTransactions = [...transactions].sort((transactionsInterfaceA, transactionsInterfaceB) => {
+    if (sortOption === '1') {
+      return new Date(transactionsInterfaceB.datetime!).getTime() - new Date(transactionsInterfaceA.datetime!).getTime();
+    } else if (sortOption === '2') {
+      return (transactionsInterfaceB.greenscore || 0) - (transactionsInterfaceA.greenscore || 0);
+    } else if (sortOption === '3') {
+      return (transactionsInterfaceA.greenscore || 0) - (transactionsInterfaceB.greenscore || 0);
+    }
+    return 0;
+  });
 
   return (
     <>
@@ -84,32 +101,31 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
           <Button id='butt' variant="primary" className='mb-2' onClick={() => setPage(4)}>Make Payment</Button>
         </Container>
         <Container className='ml-3 mr-3 p-3' id='box'>
-          <Form.Select aria-label="Sort Options" style={{ cursor: 'pointer' }}>
+          <Form.Select aria-label="Sort Options" style={{ cursor: 'pointer' }} onChange={handleSortChange}>
             <option value="1">Recent</option>
             <option value="2">Highest Score</option>
             <option value="3">Lowest Score</option>
           </Form.Select>
+
           <ListGroup as='ul'>
             {
-              transactions.map((object: any, i: number) => {
-                return (
-                  <ListGroup.Item
-                    action
-                    key={i}
-                    onClick={() => handleItemClick(object)}
-                  >
-                    <Transaction
-                      displayName={object.sender_account == accountData.account_number
-                        ? object.receiver_name
-                        : object.sender_name}
-                      reference={object.reference}
-                      amount={object.amount}
-                      RAG={object.greenscore}
-                      isInbound={object.receiver_account == accountData.account_number}
-                    />
-                  </ListGroup.Item>
-                );
-              })
+              sortedTransactions.map((object: any, i: number) => (
+                <ListGroup.Item
+                  action
+                  key={i}
+                  onClick={() => handleItemClick(object)}
+                >
+                  <Transaction
+                    displayName={object.sender_account == accountData.account_number
+                      ? object.receiver_name
+                      : object.sender_name}
+                    reference={object.reference}
+                    amount={object.amount}
+                    RAG={object.greenscore}
+                    isInbound={object.receiver_account == accountData.account_number}
+                  />
+                </ListGroup.Item>
+              ))
             }
           </ListGroup>
         </Container>
