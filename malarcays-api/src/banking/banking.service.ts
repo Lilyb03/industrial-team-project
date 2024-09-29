@@ -28,7 +28,7 @@ export class BankingService {
     let accountNum: number = body.account;
 
     // query the database for account data
-    let data: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id WHERE account_number=${accountNum};`;
+    let data: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS name, details_id FROM details) AS details ON account.details_id=details.details_id WHERE account_number=${accountNum};`;
 
     if (data.length === 0) {
       return {
@@ -42,11 +42,14 @@ export class BankingService {
     // query the database for transaction data
     let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number};`;
 
-    // console.log(transactions);
+    for (let i = 0; i < transactions.length; i++) {
+      transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
+    }
 
     // put together AccountData object to be returned to the client
     let accountData: AccountData = {
       account_number: account.account_number,
+      name: account.name,
       balance: account.amount,
       green_score: account.greenscore,
       permissions: account.type_name,
@@ -75,7 +78,8 @@ export class BankingService {
       sender_account: parseInt(body.sender.toString()),
       receiver_account: parseInt(body.recipient.toString()),
       amount: body.amount,
-      reference: body.reference
+      reference: body.reference,
+      date_time: Math.floor(Date.now() / 1000)
     };
 
     // query the database for the account data
@@ -115,8 +119,8 @@ export class BankingService {
     }
 
     // set account names in transaction data
-    transactionData.sender_name = [senderAccount.name, senderAccount.last_name].join(" ");
-    transactionData.receiver_name = [receiverAccount.name, receiverAccount.last_name].join(" ");
+    transactionData.sender_name = [senderAccount.name, senderAccount.last_name].join(" ").trim();
+    transactionData.receiver_name = [receiverAccount.name, receiverAccount.last_name].join(" ").trim();
 
     // work out greenscore
     let greenscore: number;
@@ -137,8 +141,9 @@ export class BankingService {
       let queryRes = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} WHERE account_number=${a.account_number}`;
     }
 
+
     // add transaction row into database table
-    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, now(), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
+    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
     // return relevant object to client
     return {
@@ -149,7 +154,11 @@ export class BankingService {
   }
 
   async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
-    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE (sender_account=${body.account} OR receiver_account=${body.account}) AND transaction.date_time > now() - interval '5 seconds';`;
+    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE receiver_account=${body.account} transaction.date_time > now() - interval '5 seconds';`;
+
+    for (let i = 0; i < transactions.length; i++) {
+      transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
+    }
 
     return {
       "type": 0,

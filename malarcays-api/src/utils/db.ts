@@ -50,7 +50,7 @@ export interface Transaction {
 	sender_name?: string,
 	receiver_name?: string,
 	amount: number,
-	datetime?: Date,
+	date_time: number,
 	greenscore?: number,
 	reference: string
 }

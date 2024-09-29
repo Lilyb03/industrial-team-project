@@ -36,7 +36,7 @@ export class AccountsController {
     try {
       //call the login function and return a response if the account was successful
       //if the account was not found or some other error
-      const account = await this.accountsService.login(loginDto.name);
+      const account = await this.accountsService.login(loginDto);
 
       if (account === null) {
         return res.status(HttpStatus.NOT_FOUND).json({

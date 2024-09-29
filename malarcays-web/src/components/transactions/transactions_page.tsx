@@ -9,28 +9,14 @@ import '../../index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Transaction } from './transaction';
+import { TransactionInterface, AccountData, empty_account, formatOptions } from '../../services/api';
 
-interface TransactionInterface {
-  transaction_id?: number,
-  sender_account: number,
-  receiver_account: number,
-  sender_name?: string,
-  receiver_name?: string,
-  amount: number,
-  datetime?: Date,
-  greenscore?: number,
-  reference: string
+function formatBalance(balance: number) {
+  return "£" + (balance / 100).toLocaleString('en', formatOptions);
 }
 
-interface AccountData {
-  account_number: number,
-  balance: number,
-  permissions: string,
-  green_score: number,
-  transactions: Array<TransactionInterface>
-}
 
-function MyVerticallyCenteredModal(props: any) {
+function TransactionModal(props: any) {
   const { transaction } = props;
 
   return (
@@ -48,8 +34,8 @@ function MyVerticallyCenteredModal(props: any) {
       <Modal.Body>
         <h4>Transaction Reference: {transaction.reference}</h4>
         <p>Sender: {transaction.sender_name}</p>
-        <p>Receiver: {transaction.receiver_name}</p>
-        <p>Amount: {transaction.amount}</p>
+        <p>Recipient: {transaction.receiver_name}</p>
+        <p>Amount: {formatBalance(transaction.amount)}</p>
         <p>RAG Score: {transaction.greenscore}</p>
       </Modal.Body>
       <Modal.Footer>
@@ -59,17 +45,10 @@ function MyVerticallyCenteredModal(props: any) {
   );
 }
 
-export function TransactionsPage({ accountData, setPage }: { accountData: AccountData, setPage: (pageNumber: number) => void }) {
-  const [balance, setBalance] = useState(accountData.balance);
-  const [transactions, setTransactions] = useState(accountData.transactions);
+export function TransactionsPage({ accountData, setAccountData, setPage }: { accountData: AccountData, setAccountData: (data: AccountData) => void, setPage: (pageNumber: number) => void }) {
   const [modalShow, setModalShow] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [sortOption, setSortOption] = useState('1');
-
-  let formatOptions = {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  };
 
   const handleItemClick = (transaction: any) => {
     setSelectedTransaction(transaction);
@@ -81,9 +60,9 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
   };
 
 
-  const sortedTransactions = [...transactions].sort((transactionsInterfaceA, transactionsInterfaceB) => {
+  const sortedTransactions = [...accountData.transactions].sort((transactionsInterfaceA, transactionsInterfaceB) => {
     if (sortOption === '1') {
-      return new Date(transactionsInterfaceB.datetime!).getTime() - new Date(transactionsInterfaceA.datetime!).getTime();
+      return transactionsInterfaceB.date_time - transactionsInterfaceA.date_time;
     } else if (sortOption === '2') {
       return (transactionsInterfaceB.greenscore || 0) - (transactionsInterfaceA.greenscore || 0);
     } else if (sortOption === '3') {
@@ -92,13 +71,17 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
     return 0;
   });
 
+  for (const t of sortedTransactions) {
+    console.log(t.date_time);
+  }
+
   return (
     <>
       <Stack gap={2}>
         <p id='accNum'>Account: <strong>{accountData.account_number.toString().padStart(9, '0')}</strong></p>
         <Container className='d-grid' id='box'>
           <h4>Account Balance:</h4>
-          <h2 id='admTotal'>£{(balance / 100).toLocaleString('en', formatOptions)}</h2>
+          <h2 id='admTotal'>{formatBalance(accountData.balance)}</h2>
           <Button id='butt' variant="primary" className='mb-2' onClick={() => setPage(4)}>Make Payment</Button>
         </Container>
         <Container className='ml-3 mr-3 p-3' id='box'>
@@ -133,7 +116,7 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
       </Stack>
 
       {selectedTransaction && (
-        <MyVerticallyCenteredModal
+        <TransactionModal
           show={modalShow}
           onHide={() => setModalShow(false)}
           transaction={selectedTransaction}

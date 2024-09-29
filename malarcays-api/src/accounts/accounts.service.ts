@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from '../utils/db';
 import { CreateAccountsDTO } from './dtos/createAccounts.dto';
+import { LoginDto } from './dtos/login.dto';
 
 @Injectable()
 export class AccountsService {
@@ -79,14 +80,14 @@ export class AccountsService {
     return createdAccount;
   }
 
-  async login(name: string) {
+  async login(loginData: LoginDto) {
     try {
       /*quarry to get/fetch account data
       that match the account number given
       */
       const rows = await sql`
         SELECT * FROM account
-        WHERE account_number = ${name}
+        WHERE account_number = ${loginData.account}
       `;
       //if nothing was found return null
       if (rows.length === 0) {
