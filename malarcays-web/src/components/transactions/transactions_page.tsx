@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Stack from 'react-bootstrap/Stack';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -9,7 +9,7 @@ import '../../index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Transaction } from './transaction';
-import { TransactionInterface, AccountData, empty_account, formatOptions } from '../../services/api';
+import { AccountData, formatOptions } from '../../services/api';
 
 function formatBalance(balance: number) {
   return "£" + (balance / 100).toLocaleString('en', formatOptions);
@@ -45,7 +45,7 @@ function TransactionModal(props: any) {
   );
 }
 
-export function TransactionsPage({ accountData, setAccountData, setPage }: { accountData: AccountData, setAccountData: (data: AccountData) => void, setPage: (pageNumber: number) => void }) {
+export function TransactionsPage({ accountData, setPage }: { accountData: AccountData, setPage: (pageNumber: number) => void }) {
   const [modalShow, setModalShow] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [sortOption, setSortOption] = useState('1');
@@ -70,10 +70,6 @@ export function TransactionsPage({ accountData, setAccountData, setPage }: { acc
     }
     return 0;
   });
-
-  for (const t of sortedTransactions) {
-    console.log(t.date_time);
-  }
 
   return (
     <>

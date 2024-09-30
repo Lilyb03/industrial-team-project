@@ -1,5 +1,5 @@
 //import './App.css'
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BottomBar } from './components/bottombar.tsx';
@@ -19,8 +19,8 @@ import { TransactionsPage } from './components/transactions/transactions_page.ts
 
 import Payment from './components/payment/payment.tsx';
 import { LoginPage } from './components/login/login.tsx';
-import { getDetails } from './services/details.tsx';
-import { AccountData, empty_account } from './services/api.ts';
+// import { getDetails } from './services/details.tsx';
+import { AccountData, empty_account, executeTransaction } from './services/api.ts';
 
 function CalculateGreenLevel(score: number) {
   return Math.floor(
@@ -44,15 +44,26 @@ function CalculateGreenStuff(score: number) {
 
 function MainPage({ page, setPage, accountData, setAccountData }: { page: number, setPage: (pageNumber: number) => void, accountData: AccountData, setAccountData: (data: AccountData) => void }) {
 
-  // if (accountData == empty_account) {
-  //   setAccountData()
-  // }
+  if (accountData.account_number != 0) {
+    useEffect(() => {
+      const interval = setInterval(() => {
+        fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
+          .then((res) => {
+            for (const t of res.data) {
+              setAccountData(executeTransaction(t, accountData));
+            }
+          })
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }, []);
+  }
 
   switch (page) {
     case 0:
       return (
         <>
-          <TransactionsPage accountData={accountData} setAccountData={setAccountData} setPage={setPage} />
+          <TransactionsPage accountData={accountData} setPage={setPage} />
         </>
       );
       break;
