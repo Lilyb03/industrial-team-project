@@ -39,7 +39,7 @@ export class SearchController {
   }
 
   @Get('company')
-  async companySearch(@Body() body: CompanyDTO, @Res() res: Response): Promise<Response> {
+  async companySearch(@Query() body: CompanyDTO, @Res() res: Response): Promise<Response> {
     /** 
     * Company search route handler for /search/company route
     * @param {CompanyDTO} body - request body in the form of company search data
