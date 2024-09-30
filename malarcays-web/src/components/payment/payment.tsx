@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { SuccessModal } from './modal_success';
 import { FailModal } from './modal_fail';
-import { AccountData, executeTransaction, TransactionInterface } from '../../services/api';
+import { AccountData, executeTransaction } from '../../services/api';
 
 function makePaymentCall(accountNumber: string, recipient: string, transactionAmount: number, reference: string, setSuccess: (showSuccess: boolean) => void, setFail: (showFail: boolean) => void, setClientError: (message: string) => void, accountData: AccountData, setAccountData: (data: AccountData) => void) {
 

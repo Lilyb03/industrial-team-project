@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
-import Stack from 'react-bootstrap/Stack';
 
 import { getDetails } from '../../services/details';
 import { AccountData } from '../../services/api';
