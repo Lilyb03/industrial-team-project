@@ -30,7 +30,7 @@ export function LoginPage({ setLoggedIn, setDetails }: { setLoggedIn: (logged: b
         'Content-Type': 'application/json'
       },
       body: `{"name":` + `"` + entry.name + `"`
-        + `,"account":` + entry.acc.toString()
+        + `,"account":` + parseInt(entry.acc.toString())
         + `,"password":` + `"` + entry.pass + `"`
         + `}`
     })
