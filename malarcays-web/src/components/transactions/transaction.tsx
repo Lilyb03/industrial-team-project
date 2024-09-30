@@ -11,7 +11,7 @@ export function Transaction({ displayName, reference, amount, RAG, isInbound }: 
     var imgType: string;
     var variantType: string;
 
-    if (RAG == -1) {
+    if (RAG < 0) {
         imgType = '../../../img/flat.svg';
         variantType = 'light'
     }
@@ -29,12 +29,12 @@ export function Transaction({ displayName, reference, amount, RAG, isInbound }: 
     return (
         <ListGroup.Item className="overflow-auto" id='perchText' as='li' variant={variantType}>
             <Row>
-            <Col xs={10}>
-            <strong>{isInbound ? '+' : '-'}£{amount / 100}</strong> {displayName} - {reference}
-            </Col>
-            <Col>
-            <Image id='img' src={imgType} roundedCircle />
-            </Col>
+                <Col xs={10}>
+                    <strong>{isInbound ? '+' : '-'}£{amount / 100}</strong> {displayName} - {reference}
+                </Col>
+                <Col>
+                    <Image id='img' src={imgType} roundedCircle />
+                </Col>
             </Row>
         </ListGroup.Item>
     );
