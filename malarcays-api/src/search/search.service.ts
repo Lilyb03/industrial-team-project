@@ -100,9 +100,7 @@ export class SearchService {
     * @return {Promise<object>} promise to object response for client
     */
 
-    let spending_category: string = body.category;
-
-    let data: Company[] = await sql<Company[]>`SELECT company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number FROM company INNER JOIN account ON company.details_id=account.details_id WHERE company.spending_category LIKE ${spending_category} ORDER BY company.greenscore DESC;`;
+    let data: Company[] = await sql<Company[]>`SELECT company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number, details.name FROM company INNER JOIN account ON company.details_id=account.details_id INNER JOIN details ON details.details_id=company.details_id WHERE company.spending_category IN (SELECT company.spending_category FROM company INNER JOIN details ON company.details_id=details.details_id WHERE details.name LIKE ${body.name}) ORDER BY company.greenscore DESC;`;
 
     return {
       "type": 0,
