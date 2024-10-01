@@ -4,6 +4,12 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
 export function BottomBar({ setPage }: { setPage: (pageNumber: number) => void }) {
+
+  const handleSignOut = () => {
+
+    window.location.reload();
+  };
+
   return (
     <>
       <Navbar className="bg-body-secondary fixed-bottom">
@@ -12,6 +18,7 @@ export function BottomBar({ setPage }: { setPage: (pageNumber: number) => void }
           <Button variant="secondary" onClick={() => setPage(1)}>Activity</Button>
           <Button variant="secondary" onClick={() => setPage(2)}>Settings</Button>
           <Button variant="secondary" onClick={() => setPage(3)}>More</Button>
+          <Button variant="outline-danger" onClick={handleSignOut}>Sign out</Button>
         </Container>
       </Navbar>
     </>

@@ -5,6 +5,7 @@ import { CreateAccountsDTO } from './dtos/createAccounts.dto';
 import { LoginDto } from './dtos/login.dto';
 import { AccountsService } from './accounts.service';
 
+
 @Controller()
 export class AccountsController {
   constructor(private accountsService: AccountsService) { }
@@ -40,7 +41,7 @@ export class AccountsController {
 
       if (account === null) {
         return res.status(HttpStatus.NOT_FOUND).json({
-          message: 'Account not found',
+          message: 'Account number or password are incorrect',
         });
       }
 
