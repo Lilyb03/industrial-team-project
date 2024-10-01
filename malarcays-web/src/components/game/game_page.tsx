@@ -24,9 +24,13 @@ export function GamePage({greenscore}: {greenscore: number}){
 
     const level = CalculateGreenLevel(greenscore);
 
-    console.log(Math.floor(level/5))
+    var img = "/img/tree_levels/Tree1.svg";
 
-    const img = "/img/tree_levels/Tree" + Math.floor(level/5) + ".svg";
+    if (level > 25){
+        img = "/img/tree_levels/Tree6.svg";
+    } else{
+        img = "/img/tree_levels/Tree" + (1 + Math.floor(level/5)) +".svg";
+    }
 
     return(
         <>
