@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BottomBar } from './components/bottombar.tsx';
 import { TopBar } from './components/topbar.tsx';
 import { TransactionsPage } from './components/transactions/transactions_page.tsx';
+import { GamePage } from './components/game/game_page.tsx';
 
 // import Stack from 'react-bootstrap/Stack';
 // import Container from 'react-bootstrap/Container';
@@ -44,20 +45,20 @@ function CalculateGreenStuff(score: number) {
 
 function MainPage({ page, setPage, accountData, setAccountData }: { page: number, setPage: (pageNumber: number) => void, accountData: AccountData, setAccountData: (data: AccountData) => void }) {
 
-  if (accountData.account_number != 0) {
-    useEffect(() => {
-      const interval = setInterval(() => {
-        fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
-          .then((res) => {
-            for (const t of res.data) {
-              setAccountData(executeTransaction(t, accountData));
-            }
-          })
-      }, 5000);
+  // if (accountData.account_number != 0) {
+  //   useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
+  //         .then((res) => {
+  //           for (const t of res.data) {
+  //             setAccountData(executeTransaction(t, accountData));
+  //           }
+  //         })
+  //     }, 5000);
 
-      return () => clearInterval(interval);
-    }, []);
-  }
+  //     return () => clearInterval(interval);
+  //   }, []);
+  // }
 
   switch (page) {
     case 0:
@@ -70,7 +71,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
     case 1:
       return (
         <>
-          <h1>first page</h1>
+          <GamePage greenscore={accountData.green_score} />
         </>
       );
       break;
