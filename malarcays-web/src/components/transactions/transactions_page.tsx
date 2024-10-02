@@ -38,6 +38,7 @@ function CompanySearch(companyName:string, setRecommendedCompanies: (input: Reac
 
 function TransactionModal(props: any) {
   const { transaction } = props;
+  const { companies } = props;
 
   if (transaction.greenscore < 0){
     return (
@@ -95,39 +96,21 @@ function TransactionModal(props: any) {
           <p><strong>RAG</strong></p>
           </Col>
         </Row>
-        <Row>
-          <Col>
-          <p></p>
-          </Col>
-          <Col>
-          <p>000000078</p>
-          </Col>
-          <Col>
-          <p>0.9</p>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-          <p>Goodest Company</p>
-          </Col>
-          <Col>
-          <p>000000078</p>
-          </Col>
-          <Col>
-          <p>0.9</p>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-          <p>Goodest Company</p>
-          </Col>
-          <Col>
-          <p>000000078</p>
-          </Col>
-          <Col>
-          <p>0.9</p>
-          </Col>
-        </Row>
+        {
+              companies.map((object: any, i: number) => (
+                <Row>
+                <Col>
+                <p>{object.name}</p>
+                </Col>
+                <Col>
+                <p>{object.account_number.toString().padStart(9, '0')}</p>
+                </Col>
+                <Col>
+                <p>{object.greenscore}</p>
+                </Col>
+              </Row>
+              ))
+            }
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
@@ -145,6 +128,7 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
   const handleItemClick = (transaction: any) => {
     CompanySearch(transaction.receiver_name, setRecommendedCompanies);
     setSelectedTransaction(transaction);
+    console.log(recommendedCompanies);
     setModalShow(true);
   };
 
@@ -204,11 +188,13 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
         </Container>
       </Stack>
 
-      {selectedTransaction && (
+      {selectedTransaction && recommendedCompanies && (
         <TransactionModal
           show={modalShow}
           onHide={() => setModalShow(false)}
           transaction={selectedTransaction}
+          companies={recommendedCompanies}
+          noCompanies={recommendedCompanies.length}
         />
       )}
     </>

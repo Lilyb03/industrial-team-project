@@ -44,20 +44,20 @@ function CalculateGreenStuff(score: number) {
 
 function MainPage({ page, setPage, accountData, setAccountData }: { page: number, setPage: (pageNumber: number) => void, accountData: AccountData, setAccountData: (data: AccountData) => void }) {
 
-  if (accountData.account_number != 0) {
-    useEffect(() => {
-      const interval = setInterval(() => {
-        fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
-          .then((res) => {
-            for (const t of res.data) {
-              setAccountData(executeTransaction(t, accountData));
-            }
-          })
-      }, 5000);
+  // if (accountData.account_number != 0) {
+  //   useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
+  //         .then((res) => {
+  //           for (const t of res.data) {
+  //             setAccountData(executeTransaction(t, accountData));
+  //           }
+  //         })
+  //     }, 5000);
 
-      return () => clearInterval(interval);
-    }, []);
-  }
+  //     return () => clearInterval(interval);
+  //   }, []);
+  // }
 
   switch (page) {
     case 0:
