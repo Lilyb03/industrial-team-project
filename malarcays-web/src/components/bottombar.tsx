@@ -9,6 +9,8 @@ export function BottomBar({ setPage, setLoggedIn, setDetails }: { setPage: (page
   const handleSignOut = () => {
     setDetails(empty_account);
     setLoggedIn(false);
+    console.log(setPage);
+
   };
 
   return (
