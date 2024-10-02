@@ -7,6 +7,7 @@ import { sql, Account, Company, Transaction } from '../utils/db';
 import { AccountData } from '../utils/api';
 import { TransactionDTO } from './dtos/transaction.dto';
 import { BalanceDTO } from './dtos/balance.dto';
+import { topicARN, SNS } from 'src/utils/aws';
 
 @Injectable()
 export class BankingService {
@@ -145,6 +146,20 @@ export class BankingService {
     // add transaction row into database table
     await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
+    // publish transaction event to SNS
+    let msg = {
+      Message: JSON.stringify(transactionData),
+      TopicArn: topicARN
+    };
+
+    let publishPromise = SNS.publish(msg).promise();
+
+    publishPromise.then((data) => {
+      console.log(`Message sent with id ${data.MessageId}`);
+    }).catch((err) => {
+      console.error(err, err.stack);
+    });
+
     // return relevant object to client
     return {
       "type": 0,
@@ -153,16 +168,16 @@ export class BankingService {
     }
   }
 
-  async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
-    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE receiver_account=${body.account} AND transaction.date_time > now() - interval '5 seconds';`;
+  // async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
+  //   let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE receiver_account=${body.account} AND transaction.date_time > now() - interval '5 seconds';`;
 
-    for (let i = 0; i < transactions.length; i++) {
-      transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
-    }
+  //   for (let i = 0; i < transactions.length; i++) {
+  //     transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
+  //   }
 
-    return {
-      "type": 0,
-      "data": transactions
-    }
-  }
+  //   return {
+  //     "type": 0,
+  //     "data": transactions
+  //   }
+  // }
 }

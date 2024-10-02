@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
 import { Request } from 'express';
-import { Callback, Context, Handler } from 'aws-lambda';
+// import { Callback, Handler, Context } from '@aws-sdk/client-lambda';
 import { join } from 'path';
 
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-let server: Handler;
+let server;
 
-async function bootstrap(): Promise<Handler> {
+async function bootstrap(): Promise<any> {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
 	await app.init();
 	app.enableCors();
@@ -18,10 +18,10 @@ async function bootstrap(): Promise<Handler> {
 	return serverlessExpress({ app: expressApp });
 }
 
-export const handler: Handler = async (
+export const handler = async (
 	event: any,
-	context: Context,
-	callback: Callback,
+	context: any,
+	callback: any,
 ) => {
 	event.path = event.path === '' ? '/' : event.path;
 	server = server ?? (await bootstrap());
