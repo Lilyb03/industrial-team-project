@@ -5,6 +5,7 @@ export interface AccountData {
 	name: string,
 	balance: number,
 	permissions: string,
+	has_offers: boolean,
 	green_score: number,
 	transactions: Array<Transaction>
 }

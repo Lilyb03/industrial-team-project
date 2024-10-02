@@ -1,12 +1,14 @@
 import postgres = require('postgres');
 
-export const sql = postgres({
+export const sqlParams = {
 	host: 'malarcaysdb.cluster-c3s60cs04s05.eu-west-1.rds.amazonaws.com',
 	port: 5432,
 	database: 'postgres',
 	username: 'malarcays',
 	password: 'malarcays1234'
-});
+}
+
+export const sql = postgres(sqlParams);
 
 export interface Company {
 	company_id?: number,
@@ -35,7 +37,8 @@ export interface Account {
 	type_id: number,
 	type_name?: string,
 	greenscore: number,
-	amount: number
+	amount: number,
+	has_offers?: boolean
 }
 
 export interface Type {
@@ -53,4 +56,16 @@ export interface Transaction {
 	date_time: number,
 	greenscore?: number,
 	reference: string
+}
+
+export interface WSConnection {
+	connection_id: string,
+	account: number
+}
+
+export interface Offer {
+	offer_id?: number,
+	discount_val: number,
+	discount_code: string,
+	company: string
 }
