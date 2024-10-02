@@ -37,7 +37,8 @@ export interface Account {
 	type_id: number,
 	type_name?: string,
 	greenscore: number,
-	amount: number
+	amount: number,
+	has_offers?: boolean
 }
 
 export interface Type {
@@ -60,4 +61,11 @@ export interface Transaction {
 export interface WSConnection {
 	connection_id: string,
 	account: number
+}
+
+export interface Offer {
+	offer_id?: number,
+	discount_val: number,
+	discount_code: string,
+	company: string
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { sql, Account, Company } from '../utils/db';
+import { sql, Account, Company, Offer } from '../utils/db';
 import { AccountDetails, CompanyData } from '../utils/api';
 import { AccountDTO } from './dtos/account.dto';
 import { CompanyDTO } from './dtos/company.dto';
@@ -53,7 +53,7 @@ export class SearchService {
       return {
         "type": 1,
         "message": "Account not found"
-      }
+      };
     }
 
     // create new array of account details objects
@@ -97,7 +97,7 @@ export class SearchService {
       "type": 0,
       "message": "Success",
       "accounts": accountData
-    }
+    };
   }
 
   async companySearch(body: CompanyDTO, res: Response): Promise<object> {
@@ -118,7 +118,22 @@ export class SearchService {
       "type": 0,
       "message": "Success",
       "data": data
-    }
+    };
   }
 
+  async offerSearch(res: Response): Promise<object> {
+    /** 
+    * Function to search for offers
+    * @param {Response} res - express response object
+    * @return {Promise<object>} promise to object response 
+    */
+
+    let data: Offer[] = await sql<Offer[]>`SELECT * FROM offers ORDER BY random() LIMIT 3`;
+
+    return {
+      "type": 0,
+      "message": "Success",
+      "data": data
+    };
+  }
 }
