@@ -1,4 +1,11 @@
+import { ApiGatewayManagementApi } from '@aws-sdk/client-apigatewaymanagementapi';
+
 import { Transaction } from './db';
+
+export const apig = new ApiGatewayManagementApi({
+	endpoint: process.env.APIG_ENDPOINT
+	// endpoint: "http://localhost:3001"
+});
 
 export interface AccountData {
 	account_number: number,

@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EventEmitter } from 'events';
-import { fromEvent, Observable, map } from 'rxjs';
+import { ApiGatewayManagementApi, PostToConnectionCommand } from '@aws-sdk/client-apigatewaymanagementapi';
 
-import { sql, Account, Company, Transaction } from '../utils/db';
-import { AccountData } from '../utils/api';
+import { sql, Account, Company, Transaction, WSConnection } from '../utils/db';
+import { AccountData, apig } from '../utils/api';
 import { TransactionDTO } from './dtos/transaction.dto';
 import { BalanceDTO } from './dtos/balance.dto';
 import { topicARN, SNS } from 'src/utils/aws';
@@ -137,26 +136,47 @@ export class BankingService {
     for (const a of accountData) {
       let has_offers = (a == senderAccount && (a.greenscore + (greenscore ? greenscore : 0)) > Math.ceil(a.greenscore / 250) * 250) || a.has_offers;
 
-      let queryRes = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}, has_offers = ${has_offers}` : sql``} WHERE account_number=${a.account_number}`;
+      let queryRes1 = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} WHERE account_number=${a.account_number};`;
+
+      let queryRes2 = await sql`UPDATE details SET has_offers=${has_offers} WHERE details_id IN (SELECT details_id FROM account WHERE account_number=${a.account_number});`;
     }
 
 
     // add transaction row into database table
     await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
 
-    // publish transaction event to SNS
-    let msg = {
-      Message: JSON.stringify(transactionData),
-      TopicArn: topicARN
-    };
+    // publish transaction event to recipient
+    // const msg: Transaction = JSON.parse(record.Sns.Message) as Transaction;
 
-    let publishPromise = SNS.publish(msg).promise();
+    const conns: WSConnection[] = await sql<WSConnection[]>`SELECT * from WSConnections WHERE account=${transactionData.receiver_account}`;
 
-    publishPromise.then((data) => {
-      console.log(`Message sent with id ${data.MessageId}`);
-    }).catch((err) => {
-      console.error(err, err.stack);
-    });
+    for (const conn of conns) {
+      try {
+        const cmd = new PostToConnectionCommand({
+          Data: JSON.stringify(transactionData),
+          ConnectionId: conn.connection_id
+        });
+
+        console.log(`Sent transaction to connection ID ${conn.connection_id}`);
+
+        await apig.send(cmd);
+      } catch (err) {
+        console.error(err.message, err.stack);
+        continue;
+      }
+    }
+    // let msg = {
+    //   Message: JSON.stringify(transactionData),
+    //   TopicArn: topicARN
+    // };
+
+    // let publishPromise = SNS.publish(msg).promise();
+
+    // publishPromise.then((data) => {
+    //   console.log(`Message sent with id ${data.MessageId}`);
+    // }).catch((err) => {
+    //   console.error(err, err.stack);
+    // });
 
     // return relevant object to client
     return {

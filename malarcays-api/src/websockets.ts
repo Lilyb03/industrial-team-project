@@ -71,37 +71,3 @@ async function onWsMessage(sql, connectionId, body): Promise<number> {
 	});
 	return 200;
 }
-
-exports.snsHandler = async function (event, context) {
-	const sql = postgres(sqlParams);
-	for (const record of event.Records) {
-		await processSNSEvent(sql, record);
-	}
-	sql.end()
-
-	return { statusCode: 200 };
-}
-
-async function processSNSEvent(sql, record) {
-	try {
-		const msg: Transaction = JSON.parse(record.Sns.Message) as Transaction;
-
-		const conns: WSConnection[] = await sql<WSConnection[]>`SELECT * from WSConnections WHERE account=${msg.receiver_account}`;
-
-		for (const conn of conns) {
-			try {
-				const cmd = new PostToConnectionCommand({
-					Data: JSON.stringify(msg),
-					ConnectionId: conn.connection_id
-				});
-
-				await apig.send(cmd);
-			} catch {
-				continue;
-			}
-		}
-
-	} catch (err) {
-		throw err;
-	}
-}
