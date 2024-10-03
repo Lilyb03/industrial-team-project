@@ -40,7 +40,16 @@ export function AdminPage() {
     });
   };
 
-    return (
+  const toggleRow = (account_number: number) => {
+    const isRowExpanded = expandedRows.includes(account_number);
+    if (isRowExpanded) {
+      setExpandedRows(expandedRows.filter((id) => id !== account_number));
+    } else {
+      setExpandedRows([...expandedRows, account_number]);
+    }
+  };
+  
+  return (
     <>
       <Container className="vh-100 mt-5">
         <h2 className="mb-4">Admin Dashboard - Search Account by Number</h2>
