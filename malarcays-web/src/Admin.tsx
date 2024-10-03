@@ -126,6 +126,7 @@ export function AdminPage() {
           </Table>
         </Container>
     </>
+  );
 }
 
 export default AdminPage;
