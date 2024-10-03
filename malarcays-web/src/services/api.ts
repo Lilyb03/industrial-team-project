@@ -17,6 +17,7 @@ export interface AccountData {
   balance: number,
   permissions: string,
   green_score: number,
+  has_offers: boolean,
   transactions: Array<TransactionInterface>
 }
 
@@ -26,6 +27,7 @@ export let empty_account: AccountData = {
   balance: 0,
   permissions: "",
   green_score: 0,
+  has_offers: false,
   transactions: []
 }
 

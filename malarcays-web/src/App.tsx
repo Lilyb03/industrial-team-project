@@ -71,7 +71,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
     case 1:
       return (
         <>
-          <GamePage greenscore={accountData.green_score} />
+          <GamePage greenscore={accountData.green_score} hasOffer={accountData.has_offers} />
         </>
       );
       break;
