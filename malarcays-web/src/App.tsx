@@ -23,6 +23,7 @@ import { LoginPage } from './components/login/login.tsx';
 // import { getDetails } from './services/details.tsx';
 import { AccountData, empty_account, executeTransaction } from './services/api.ts';
 import SignupPage from './components/login/Signup.tsx';
+import Admin from './Admin';
 
 function CalculateGreenLevel(score: number) {
   return Math.floor(
