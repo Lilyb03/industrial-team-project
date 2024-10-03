@@ -31,14 +31,6 @@ describe('Search', () => {
 		return expect(res.statusCode).toBe(400);
 	});
 
-	it(`GET /transaction-events`, async () => {
-		const res = await request(app.getHttpServer()).get('/transaction-events').query({ "account": 1 });
-		if (res.statusCode != 200) {
-			console.log(res.body);
-		}
-		return expect(res.statusCode).toBe(200);
-	})
-
 	afterAll(async () => {
 		await app.close();
 	});

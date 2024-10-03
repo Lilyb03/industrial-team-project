@@ -8,14 +8,14 @@ import { Offer, AccountData } from '../../services/api';
 
 function OffersRow({ companyName, discount, code, onClaim, index, claimedIndex }: { companyName: string, discount: number, code: string, onClaim: () => void, index: number, claimedIndex: number | null }) {
   return (
-    <Row>
-      <Col>
+    <Row className="align-items-center">
+      <Col className="overflow-visible">
         <p>{companyName}</p>
       </Col>
-      <Col>
+      <Col className="overflow-visible">
         <p>{((1 - discount) * 100).toFixed(0)}%</p>
       </Col>
-      <Col>
+      <Col className="overflow-visible">
         {index === claimedIndex ?
           <p>{code}</p> :
           <Button onClick={onClaim} disabled={index !== claimedIndex && claimedIndex != null ? true : false}>Claim</Button>
@@ -46,7 +46,7 @@ export function OffersModal({ modalShow, setModalShow, offers, accountData, setA
       <Modal show={modalShow}>
         <Modal.Header closeButton onHide={() => setModalShow(false)}>
           <Modal.Title id="contained-modal-title-vcenter">
-            Transaction Details
+            Offers
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-start">

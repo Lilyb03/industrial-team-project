@@ -7,10 +7,15 @@ import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Modal from 'react-bootstrap/Modal';
 
+import { FailModal } from '../payment/modal_fail';
+
 function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
-  const [accountType, setAccountType] = useState('');
+  const [accountType, setAccountType] = useState('1');
   const [showModal, setShowModal] = useState(false);
   const [accountNumber, setAccountNumber] = useState('');
+  const [showFail, setFail] = useState(false);
+  const [clientError, setClientError] = useState("We don't know what happened here. Try again.");
+
   const handleAccountTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setAccountType(event.target.value);
   };
@@ -51,12 +56,16 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
         if (res.message === 'Account created') {
           setAccountNumber(res.data[0].account_number);
           setShowModal(true);
+        } else {
+          setFail(true);
+          setClientError("Your Details were incorrect");
         }
       });
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setFail(false);
     setPage(0);
   };
 
@@ -67,21 +76,29 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
           <Image src="/img/Malarcays.png" className="mb-3" fluid />
           <h2>Sign Up</h2>
           <Form onSubmit={handleSubmit}>
-            <FloatingLabel label="First Name" className="mt-2 mb-2">
-              <Form.Control name="name" type="text" placeholder="Enter first name" />
-            </FloatingLabel>
-            <FloatingLabel label="Last Name" className="mt-2 mb-2">
-              <Form.Control name="lastName" type="text" placeholder="Enter last name" />
-            </FloatingLabel>
-            <FloatingLabel label="Password" className="mt-2 mb-2">
-              <Form.Control name="pass" type="password" placeholder="Enter password" />
-            </FloatingLabel>
-
             <FloatingLabel label="Account Type" className="mt-2 mb-2">
               <Form.Select name="type_id" onChange={handleAccountTypeChange} aria-label="Select account type">
                 <option value="1">Customer</option>
                 <option value="2">Business</option>
               </Form.Select>
+            </FloatingLabel>
+
+            {accountType === '1' ? <>
+              <FloatingLabel label="First Name" className="mt-2 mb-2">
+                <Form.Control name="name" type="text" placeholder="Enter first name" required />
+              </FloatingLabel>
+              <FloatingLabel label="Last Name" className="mt-2 mb-2">
+                <Form.Control name="lastName" type="text" placeholder="Enter last name" />
+              </FloatingLabel>
+            </> :
+              <>
+                <FloatingLabel label="Company Name" className="mt-2 mb-2">
+                  <Form.Control name="name" type="text" placeholder="Enter company name" required />
+                </FloatingLabel>
+              </>
+            }
+            <FloatingLabel label="Password" className="mt-2 mb-2">
+              <Form.Control name="pass" type="password" placeholder="Enter password" required />
             </FloatingLabel>
 
             {accountType === '2' && (
@@ -110,26 +127,28 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
             <Container>
               <h5>
                 Already have an account? Log In here:
-                <Button id='login' className='mb-1' variant='primary' onClick={() => {setPage(0);}}>Log In</Button>
+                <Button id='login' className='mb-1' variant='primary' onClick={() => { setPage(0); }}>Log In</Button>
               </h5>
             </Container>
           </Form>
         </Container>
       </Container>
 
-        <Modal show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Account Created</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Your account number is: <strong>{accountNumber}</strong></p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Account Created</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Your account number is: <strong>{accountNumber}</strong></p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <FailModal onExit={() => setFail(false)} message={clientError} show={showFail} />
     </>
 
   );

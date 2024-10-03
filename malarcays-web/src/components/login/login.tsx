@@ -4,13 +4,17 @@ import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import { useState } from 'react';
 
 
 import { getDetails } from '../../services/details';
 import { AccountData } from '../../services/api';
+import { FailModal } from '../payment/modal_fail';
 
 
-export function LoginPage({setPage, setLoggedIn, setDetails }: { setPage: (pageNumber: number) => void, setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => any }) {
+export function LoginPage({ setPage, setLoggedIn, setDetails }: { setPage: (pageNumber: number) => void, setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => any }) {
+  const [showFail, setFail] = useState(false);
+  const [clientError, setClientError] = useState("We don't know what happened here. Try again.");
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -47,6 +51,8 @@ export function LoginPage({setPage, setLoggedIn, setDetails }: { setPage: (pageN
           });
           setLoggedIn(true);
         } else {
+          setFail(true);
+          setClientError("Login details were incorrect");
         }
       })
 
@@ -61,15 +67,15 @@ export function LoginPage({setPage, setLoggedIn, setDetails }: { setPage: (pageN
 
           <Form onSubmit={handleSubmit}>
             <FloatingLabel label="Account Number" className="mt-2 mb-2">
-              <Form.Control name="acc" type="text" placeholder="Account Number" />
+              <Form.Control name="acc" type="text" placeholder="Account Number" required />
             </FloatingLabel>
 
             <FloatingLabel label="Name" className="mt-2 mb-2">
-              <Form.Control name="name" type="text" placeholder="Name" />
+              <Form.Control name="name" type="text" placeholder="Name" required />
             </FloatingLabel>
 
             <FloatingLabel label="Password" className="mt-2 mb-2">
-              <Form.Control name="pass" type="password" placeholder="Password" />
+              <Form.Control name="pass" type="password" placeholder="Password" required />
             </FloatingLabel>
 
             <Button id="butt" className="mt-3" variant="primary" type="submit">
@@ -79,12 +85,14 @@ export function LoginPage({setPage, setLoggedIn, setDetails }: { setPage: (pageN
             <Container>
               <h5>
                 Don't have an account? Sign up here:{" "}
-                <Button id="signup" className="mb-1" variant="primary" onClick={() => {setPage(5);}}>Sign Up</Button>
+                <Button id="signup" className="mb-1" variant="primary" onClick={() => { setPage(5); }}>Sign Up</Button>
               </h5>
             </Container>
           </Form>
         </Container>
       </Container>
+
+      <FailModal onExit={() => setFail(false)} message={clientError} show={showFail} />
     </>
   );
 

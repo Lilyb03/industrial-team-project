@@ -22,7 +22,7 @@ function makePaymentCall(accountNumber: string, recipient: string, transactionAm
       'Content-Type': 'application/json'
     },
     body: `{"sender":` + accountNumber
-      + `,"recipient":` + recipient
+      + `,"recipient":` + parseInt(recipient.toString())
       + `,"amount":` + transactionAmount
       + `,"reference": "` + reference + `"`
       + `}`
@@ -103,20 +103,20 @@ function Payment({ setPage, accountData, setAccountData }: { setPage: (pageNumbe
           <h2>Make a Payment</h2>
 
           <Form onSubmit={handleSubmit}>
-            <Form.Control className="mt-2 mb-2" name='payee' type="text" placeholder="Payee Name" />
-            <Form.Control className="mt-2 mb-2" name='acc' type="text" placeholder="Payee Account Number" />
+            <Form.Control className="mt-2 mb-2" name='payee' type="text" placeholder="Payee Name" required />
+            <Form.Control className="mt-2 mb-2" name='acc' type="text" placeholder="Payee Account Number" required />
             <InputGroup className="mt-2 mb-2">
               <InputGroup.Text>£</InputGroup.Text>
-              <Form.Control name='amt' type="number" placeholder="Amount" step="0.01" />
+              <Form.Control name='amt' type="number" placeholder="Amount" step="0.01" required />
             </InputGroup>
-            <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="Payment Reference" />
+            <Form.Control className="mt-2 mb-2" name='ref' type="text" placeholder="Payment Reference" required />
             <Button id='butt' className='mt-3' variant='primary' type='submit'>Continue</Button>
           </Form>
         </Container>
       </Stack>
 
       <SuccessModal payee={payeeName} amount={paymentAmt} show={showSuccess} setPage={setPage} />
-      <FailModal setPage={setPage} message={clientError} show={showFail} />
+      <FailModal onExit={() => setPage(0)} message={clientError} show={showFail} />
     </>
   )
 }

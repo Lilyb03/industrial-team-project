@@ -44,7 +44,8 @@ export let formatOptions = {
 };
 
 export function executeTransaction(transaction: TransactionInterface, data: AccountData, setAccountData: (data: AccountData) => void): void {
-  setAccountData(executeAccounting(transaction, data));
+  data = executeAccounting(transaction, data);
+  setAccountData(data);
 
   executeGreen(transaction, data)
     .then((res) => {

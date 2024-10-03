@@ -56,7 +56,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
 
       socket.onmessage = (msg) => {
         console.log(msg.data);
-        setAccountData(executeTransaction(JSON.parse(msg.data), accountData));
+        executeTransaction(JSON.parse(msg.data), accountData, setAccountData);
       }
     }, []);
   }
@@ -144,19 +144,19 @@ function App() {
   if (!loggedIn && page !== 5) {
     return (
       <>
-        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} setPage={setPage}/>
+        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} setPage={setPage} />
       </>
     )
 
-  }else if (!loggedIn && page === 5){
+  } else if (!loggedIn && page === 5) {
     return (
       <>
         <SignupPage setPage={setPage} />
       </>
 
-      )
+    )
 
-  }return (
+  } return (
     <>
       <header>
         <TopBar perc={CalculateGreenStuff(details.green_score)} name={details.name} level={CalculateGreenLevel(details.green_score)} />

@@ -17,22 +17,22 @@ function formatBalance(balance: number) {
   return "£" + (balance / 100).toLocaleString('en', formatOptions);
 }
 
-function CompanySearch(companyName:string, setRecommendedCompanies: (input: React.Dispatch<any>) => void){
-    const companySearch = "https://api.malarcays.uk/search/company?name=" + companyName;
-    let res;
-    var i = 0;
+function CompanySearch(companyName: string, setRecommendedCompanies: (input: React.Dispatch<any>) => void) {
+  const companySearch = "https://api.malarcays.uk/search/company?name=" + companyName;
+  let res;
+  var i = 0;
 
-    fetch(companySearch)
-    .then ((resp) => resp.json())
-    .then(function(data){
+  fetch(companySearch)
+    .then((resp) => resp.json())
+    .then(function (data) {
       res = data.data.slice(0, 3);
-      for (const x of res){
-        if (x.name == companyName){
+      for (const x of res) {
+        if (x.name == companyName) {
           break;
         }
         i++;
       }
-      setRecommendedCompanies(res.slice(0,i));
+      setRecommendedCompanies(res.slice(0, i));
     })
 }
 
@@ -40,29 +40,29 @@ function TransactionModal(props: any) {
   const { transaction } = props;
   const { companies } = props;
 
-  if (transaction.greenscore < 0){
+  if (transaction.greenscore < 0) {
     return (
       <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Transaction Details
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="text-start">
-        <h4>REF: {transaction.reference}</h4>
-        <p className="text-start">Sender: {transaction.sender_name}</p>
-        <p className="text-start">Recipient: {transaction.receiver_name}</p>
-        <p className="text-start">Amount: {formatBalance(transaction.amount)}</p>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Transaction Details
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-start">
+          <h4>REF: {transaction.reference}</h4>
+          <p className="text-start">Sender: {transaction.sender_name}</p>
+          <p className="text-start">Recipient: {transaction.receiver_name}</p>
+          <p className="text-start">Amount: {formatBalance(transaction.amount)}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={props.onHide}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
@@ -86,31 +86,31 @@ function TransactionModal(props: any) {
         <p className="text-start mb-1">Green Score: {transaction.greenscore}</p>
         <h4>Recommended Companies</h4>
         <Row>
-        <Col>
-          <p><strong>Company</strong></p>
+          <Col>
+            <p><strong>Company</strong></p>
           </Col>
           <Col>
-          <p><strong>Account</strong></p>
+            <p><strong>Account</strong></p>
           </Col>
           <Col>
-          <p><strong>RAG</strong></p>
+            <p><strong>RAG</strong></p>
           </Col>
         </Row>
         {
-              companies.map((object: any, i: number) => (
-                <Row>
-                <Col>
+          companies.map((object: any, _i: number) => (
+            <Row>
+              <Col>
                 <p>{object.name}</p>
-                </Col>
-                <Col>
+              </Col>
+              <Col>
                 <p>{object.account_number.toString().padStart(9, '0')}</p>
-                </Col>
-                <Col>
+              </Col>
+              <Col>
                 <p>{object.greenscore}</p>
-                </Col>
-              </Row>
-              ))
-            }
+              </Col>
+            </Row>
+          ))
+        }
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>

@@ -9,8 +9,6 @@ export function BottomBar({ setPage, setLoggedIn, setDetails }: { setPage: (page
   const handleSignOut = () => {
     setDetails(empty_account);
     setLoggedIn(false);
-    console.log(setPage);
-
   };
 
   return (
@@ -19,9 +17,7 @@ export function BottomBar({ setPage, setLoggedIn, setDetails }: { setPage: (page
         <Container>
           <Button variant="secondary" onClick={() => setPage(0)}>Profile</Button>
           <Button variant="secondary" onClick={() => setPage(1)}>Activity</Button>
-          <Button variant="secondary" onClick={() => setPage(2)}>Settings</Button>
-          <Button variant="secondary" onClick={() => setPage(3)}>More</Button>
-          <Button variant="outline-danger" onClick={handleSignOut}>Sign out</Button>
+          <Button variant="danger" onClick={handleSignOut}>Sign Out</Button>
         </Container>
       </Navbar>
     </>

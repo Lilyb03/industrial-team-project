@@ -16,7 +16,7 @@ describe('Search', () => {
 	});
 
 	it(`POST /login`, async () => {
-		const res = await request(app.getHttpServer()).post('/login').send({ "account": 1, "name": "test", "password": "test" });
+		const res = await request(app.getHttpServer()).post('/login').send({ "account": 1, "name": "test", "password": "password" });
 		if (res.statusCode != 200) {
 			console.log(res.body);
 		}
@@ -24,7 +24,7 @@ describe('Search', () => {
 	});
 
 	it(`POST /login`, async () => {
-		const res = await request(app.getHttpServer()).post('/login').send({ "account": -1, "name": "test", "password": "test" });
+		const res = await request(app.getHttpServer()).post('/login').send({ "account": -1, "name": "test", "password": "password" });
 		if (res.statusCode != 404) {
 			console.log(res.body);
 		}
