@@ -86,9 +86,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
       break;
     case 3:
       return (
-        <>
-          <h1>fourth page</h1>
-        </>
+          return <Admin />;
       );
       break;
 
