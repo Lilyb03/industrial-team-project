@@ -27,6 +27,33 @@ export function AdminPage() {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [isCompany, setIsCompany] = useState(false);
 
+  const [rewards, setRewards] = useState([
+    { id: 1, name: 'Free Coffee', description: 'Get a free coffee with 100 points', points: 100 },
+    { id: 2, name: 'Discount Voucher', description: '20% off your next purchase', points: 200 },
+    { id: 3, name: 'Movie Ticket', description: 'Get a free movie ticket with 300 points', points: 300 },
+    { id: 4, name: 'Free Lunch', description: 'Free lunch at a selected restaurant with 500 points', points: 500 },
+  ]);
+  const [editingReward, setEditingReward] = useState<number | null>(null);
+  const [newRewardData, setNewRewardData] = useState({ name: '', description: '', points: 0 });
+
+  const handleEditReward = (id: number) => {
+    const rewardToEdit = rewards.find((reward) => reward.id === id);
+    if (rewardToEdit) {
+      setNewRewardData({ name: rewardToEdit.name, description: rewardToEdit.description, points: rewardToEdit.points });
+      setEditingReward(id);
+    }
+  };
+
+  const handleSaveReward = () => {
+    setRewards(rewards.map((reward) => (reward.id === editingReward ? { ...reward, ...newRewardData } : reward)));
+    setEditingReward(null);
+    setNewRewardData({ name: '', description: '', points: 0 });
+  };
+
+  const handleDeleteReward = (id: number) => {
+    setRewards(rewards.filter((reward) => reward.id !== id));
+  };
+
   const handleSearch = (event: any) => {
     event.preventDefault();
     setLoading(true);
@@ -70,6 +97,7 @@ export function AdminPage() {
         </Form>
 
         {loading && <p>Loading...</p>}
+
           <Table striped bordered hover>
           <thead>
             <tr>
@@ -124,6 +152,48 @@ export function AdminPage() {
             )}
           </tbody>
           </Table>
+          
+          <Container className="mt-5">
+          <h3 className="mb-4">Rewards Section</h3>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Reward Name</th>
+                <th>Description</th>
+                <th>Points Required</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rewards.map((reward) => (
+                <tr key={reward.id}>
+                  {editingReward === reward.id ? (
+                    <>
+                      <td><input type="text" name="name" value={newRewardData.name} onChange={handleRewardInputChange} /></td>
+                      <td><input type="text" name="description" value={newRewardData.description} onChange={handleRewardInputChange} /></td>
+                      <td><input type="number" name="points" value={newRewardData.points} onChange={handleRewardInputChange} /></td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{reward.name}</td>
+                      <td>{reward.description}</td>
+                      <td>{reward.points}</td>
+                    </>
+                  )}
+                  <td>
+                    {editingReward === reward.id ? (
+                      <Button variant="success" className="me-2" onClick={handleSaveReward}>Save</Button>
+                    ) : (
+                      <Button variant="warning" className="me-2" onClick={() => handleEditReward(reward.id)}>Edit</Button>
+                    )}
+                    <Button variant="danger" onClick={() => handleDeleteReward(reward.id)}>Delete</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          </Container>
+
         </Container>
     </>
   );
