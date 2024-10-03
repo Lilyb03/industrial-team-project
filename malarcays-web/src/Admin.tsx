@@ -61,7 +61,60 @@ export function AdminPage() {
         </Form>
 
         {loading && <p>Loading...</p>}
+          <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Account Number</th>
+              <th>{isCompany ? 'Company Name' : 'Name'}</th>
+              <th>{isCompany ? 'Spending Category' : 'Last Name'}</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length > 0 ? (
+              users.map((user) => (
+                <>
+                  <tr key={user.account_number}>
+                    <td>{user.account_number}</td>
+                    <td>{user.name}</td>
+                    <td>{isCompany ? user.company?.spending_category : user.last_name}</td>
+                    <td>
+                      {isCompany ? (
+                        <Button
+                          variant="info"
+                          className="me-2"
+                          onClick={() => toggleRow(user.account_number)}
+                        >
+                          {expandedRows.includes(user.account_number) ? 'Less' : 'More Info'}
+                        </Button>
+                      ) : null}
+                      <Button variant="warning" className="me-2">Edit</Button>
+                      <Button variant="danger">Delete</Button>
+                    </td>
+                  </tr>
 
+                  {isCompany && expandedRows.includes(user.account_number) && (
+                    <tr key={`${user.account_number}-details`}>
+                      <td colSpan={4}>
+                        <strong>Additional Company Details:</strong>
+                        <ul>
+                          <li>Carbon Emissions: {user.company?.carbon_emissions}</li>
+                          <li>RAG Score: {user.company?.rag_score}</li>
+                          <li>Sustainability Practices: {user.company?.sustainability_practices}</li>
+                          <li>Waste Management: {user.company?.waste_management}</li>
+                        </ul>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4}>No accounts found</td>
+              </tr>
+            )}
+          </tbody>
+          </Table>
         </Container>
     </>
 }
