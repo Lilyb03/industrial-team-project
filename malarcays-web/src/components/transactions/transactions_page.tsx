@@ -36,7 +36,7 @@ function TransactionModal(props: any) {
         <p className="text-start">Sender: {transaction.sender_name}</p>
         <p className="text-start">Recipient: {transaction.receiver_name}</p>
         <p className="text-start">Amount: {formatBalance(transaction.amount)}</p>
-        <p className="text-start">Green Score: {transaction.greenscore}</p>
+        {(transaction.greenscore && transaction.greenscore >= 0) && <p className="text-start">Green Score: {transaction.greenscore}</p>}
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>

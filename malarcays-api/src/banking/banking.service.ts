@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EventEmitter } from 'events';
-import { fromEvent, Observable, map } from 'rxjs';
+import { ApiGatewayManagementApi, PostToConnectionCommand } from '@aws-sdk/client-apigatewaymanagementapi';
 
-import { sql, Account, Company, Transaction } from '../utils/db';
-import { AccountData } from '../utils/api';
+import { sql, Account, Company, Transaction, WSConnection } from '../utils/db';
+import { AccountData, apig } from '../utils/api';
 import { TransactionDTO } from './dtos/transaction.dto';
 import { BalanceDTO } from './dtos/balance.dto';
+import { topicARN, SNS } from 'src/utils/aws';
+import { OfferDTO } from './dtos/offer.dto';
 
 @Injectable()
 export class BankingService {
-  private readonly transactionEmitter: EventEmitter;
-
-  constructor() {
-    this.transactionEmitter = new EventEmitter();
-  }
-
   async getBalance(body: BalanceDTO, res: Response): Promise<object> {
     /** 
     * Function to get the balance of an account
@@ -28,7 +23,7 @@ export class BankingService {
     let accountNum: number = body.account;
 
     // query the database for account data
-    let data: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS name, details_id FROM details) AS details ON account.details_id=details.details_id WHERE account_number=${accountNum};`;
+    let data: Account[] = await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS name, has_offers, details_id FROM details) AS details ON account.details_id=details.details_id WHERE account_number=${accountNum};`;
 
     if (data.length === 0) {
       return {
@@ -52,6 +47,7 @@ export class BankingService {
       name: account.name,
       balance: account.amount,
       green_score: account.greenscore,
+      has_offers: account.has_offers,
       permissions: account.type_name,
       transactions: transactions
     };
@@ -138,12 +134,49 @@ export class BankingService {
 
     // update account data for every relevant account
     for (const a of accountData) {
-      let queryRes = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} WHERE account_number=${a.account_number}`;
+      let has_offers = (a == senderAccount && (a.greenscore + (greenscore ? greenscore : 0)) > Math.ceil(a.greenscore / 250) * 250) || a.has_offers;
+
+      let queryRes1 = await sql`UPDATE account SET amount=${a.amount}${a.account_number === transactionData.sender_account ? sql`, greenscore = greenscore + ${greenscore ? greenscore : 0}` : sql``} WHERE account_number=${a.account_number};`;
+
+      let queryRes2 = await sql`UPDATE details SET has_offers=${has_offers} WHERE details_id IN (SELECT details_id FROM account WHERE account_number=${a.account_number});`;
     }
 
 
     // add transaction row into database table
     await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
+
+    // publish transaction event to recipient
+    // const msg: Transaction = JSON.parse(record.Sns.Message) as Transaction;
+
+    const conns: WSConnection[] = await sql<WSConnection[]>`SELECT * from WSConnections WHERE account=${transactionData.receiver_account}`;
+
+    for (const conn of conns) {
+      try {
+        const cmd = new PostToConnectionCommand({
+          Data: JSON.stringify(transactionData),
+          ConnectionId: conn.connection_id
+        });
+
+        console.log(`Sent transaction to connection ID ${conn.connection_id}`);
+
+        await apig.send(cmd);
+      } catch (err) {
+        console.error(err.message, err.stack);
+        continue;
+      }
+    }
+    // let msg = {
+    //   Message: JSON.stringify(transactionData),
+    //   TopicArn: topicARN
+    // };
+
+    // let publishPromise = SNS.publish(msg).promise();
+
+    // publishPromise.then((data) => {
+    //   console.log(`Message sent with id ${data.MessageId}`);
+    // }).catch((err) => {
+    //   console.error(err, err.stack);
+    // });
 
     // return relevant object to client
     return {
@@ -153,16 +186,12 @@ export class BankingService {
     }
   }
 
-  async transactionEvents(body: BalanceDTO, res: Response): Promise<object> {
-    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE receiver_account=${body.account} AND transaction.date_time > now() - interval '5 seconds';`;
-
-    for (let i = 0; i < transactions.length; i++) {
-      transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
-    }
+  async claimOffer(body: OfferDTO, res: Response): Promise<object> {
+    await sql`UPDATE details SET has_offers=FALSE WHERE details_id IN (SELECT details_id FROM account WHERE account_number=${body.account})`
 
     return {
       "type": 0,
-      "data": transactions
+      "message": "Success"
     }
   }
 }
