@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { BankingService } from './banking.service';
 import { TransactionDTO } from './dtos/transaction.dto';
 import { BalanceDTO } from './dtos/balance.dto';
+import { OfferDTO } from './dtos/offer.dto';
 
 @Controller()
 export class BankingController {
@@ -68,16 +69,29 @@ export class BankingController {
     }
   }
 
-  @Get('transaction-events')
-  async transactionEvents(@Query() body: BalanceDTO, @Res() res: Response): Promise<Response> {
+  @Get('claim-offer')
+  async claimOffer(@Query() body: OfferDTO, @Res() res: Response): Promise<Response> {
+    /** 
+    * Route used to claim an offer for a certain account (resetting db flag)
+    * @param {OfferDTO} body - the request body in the form of an offer DTO
+    * @param {Response} res - the express response object
+    * @return {Promise<Response>} promise to express response object
+    */
+
     try {
-      const result = await this.bankingService.transactionEvents(body, res);
+      const result = await this.bankingService.claimOffer(body, res);
+
+      if (result["type"] === 1) {
+        return res.status(HttpStatus.BAD_REQUEST).json(result);
+      }
+
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         "type": 1,
-        "message": `Could not fetch transactions: ${error.message}`
+        "message": `Could not claim offer: ${error.message}`
       });
     }
+
   }
 }

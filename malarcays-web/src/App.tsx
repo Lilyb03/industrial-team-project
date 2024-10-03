@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BottomBar } from './components/bottombar.tsx';
 import { TopBar } from './components/topbar.tsx';
 import { TransactionsPage } from './components/transactions/transactions_page.tsx';
+import { GamePage } from './components/game/game_page.tsx';
 
 // import Stack from 'react-bootstrap/Stack';
 // import Container from 'react-bootstrap/Container';
@@ -21,6 +22,7 @@ import Payment from './components/payment/payment.tsx';
 import { LoginPage } from './components/login/login.tsx';
 // import { getDetails } from './services/details.tsx';
 import { AccountData, empty_account, executeTransaction } from './services/api.ts';
+import SignupPage from './components/login/Signup.tsx';
 
 function CalculateGreenLevel(score: number) {
   return Math.floor(
@@ -43,21 +45,21 @@ function CalculateGreenStuff(score: number) {
 
 
 function MainPage({ page, setPage, accountData, setAccountData }: { page: number, setPage: (pageNumber: number) => void, accountData: AccountData, setAccountData: (data: AccountData) => void }) {
+  if (accountData.account_number != 0) {
 
-  // if (accountData.account_number != 0) {
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
-  //         .then((res) => {
-  //           for (const t of res.data) {
-  //             setAccountData(executeTransaction(t, accountData));
-  //           }
-  //         })
-  //     }, 5000);
+    useEffect(() => {
+      const socket = new WebSocket(`wss://0nq5sv7owa.execute-api.eu-west-1.amazonaws.com/dev?account=${accountData.account_number}`);
+      // const socket = new WebSocket(`wss://localhost:3001/dev?account=${accountData.account_number}`);
+      socket.onopen = () => {
+        console.log("ws opened");
+      };
 
-  //     return () => clearInterval(interval);
-  //   }, []);
-  // }
+      socket.onmessage = (msg) => {
+        console.log(msg.data);
+        setAccountData(executeTransaction(JSON.parse(msg.data), accountData));
+      }
+    }, []);
+  }
 
   switch (page) {
     case 0:
@@ -70,7 +72,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
     case 1:
       return (
         <>
-          <h1>first page</h1>
+          <GamePage greenscore={accountData.green_score} hasOffer={accountData.has_offers} accountData={accountData} setAccountData={setAccountData} />
         </>
       );
       break;
@@ -95,9 +97,17 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
           <Payment setPage={setPage} accountData={accountData} setAccountData={setAccountData} />
         </>
       )
+    case 5:
+      return (
+        <>
+          <SignupPage setPage={setPage} />
+        </>
+      );
+    default:
+      return null;
   }
-
 }
+
 
 // function FetchUser(){
 //   const apiCall = "https://api.malarcays.uk/balance?account=91";
@@ -121,6 +131,7 @@ function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
 
+
   // useEffect(() => {
   //     getDetails()
   //       .then(data => {
@@ -130,23 +141,29 @@ function App() {
 
   // console.log(details);
 
-  if (!loggedIn) {
+  if (!loggedIn && page !== 5) {
     return (
       <>
-        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} />
+        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} setPage={setPage}/>
       </>
     )
 
-  }
+  }else if (!loggedIn && page === 5){
+    return (
+      <>
+        <SignupPage setPage={setPage} />
+      </>
 
-  return (
+      )
+
+  }return (
     <>
       <header>
         <TopBar perc={CalculateGreenStuff(details.green_score)} name={details.name} level={CalculateGreenLevel(details.green_score)} />
       </header>
       <MainPage page={page} setPage={setPage} accountData={details} setAccountData={setDetails} />
       <footer>
-        <BottomBar setPage={setPage} />
+        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} />
       </footer>
     </>
   );

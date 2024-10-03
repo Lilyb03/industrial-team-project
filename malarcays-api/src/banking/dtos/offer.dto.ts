@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class CompanyDTO {
+export class OfferDTO {
 	@IsNotEmpty()
-	@IsString()
-	name: string;
+	@IsNumber()
+	account: number;
 }

@@ -39,7 +39,7 @@ export class SearchController {
   }
 
   @Get('company')
-  async companySearch(@Body() body: CompanyDTO, @Res() res: Response): Promise<Response> {
+  async companySearch(@Query() body: CompanyDTO, @Res() res: Response): Promise<Response> {
     /** 
     * Company search route handler for /search/company route
     * @param {CompanyDTO} body - request body in the form of company search data
@@ -63,6 +63,29 @@ export class SearchController {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         "type": 1,
         "message": `Could not fetch companies: ${error.message}`
+      });
+    }
+  }
+
+  @Get('offers')
+  async offerSearch(@Res() res: Response): Promise<Response> {
+    /** 
+    * Offer search route handler for /search/offers route
+    * @param {Response} res - express response object
+    * @return {Promise<Response>} Promise to express response object
+    */
+    try {
+      const result = await this.searchService.offerSearch(res);
+
+      if (result["tye"] === 1) {
+        return res.status(HttpStatus.BAD_REQUEST).json(result);
+      }
+
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        "type": 1,
+        "message": `Could not fetch offers: ${error.message}`
       });
     }
   }

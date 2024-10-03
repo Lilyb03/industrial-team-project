@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { sql, Account, Company } from '../utils/db';
+import { sql, Account, Company, Offer } from '../utils/db';
 import { AccountDetails, CompanyData } from '../utils/api';
 import { AccountDTO } from './dtos/account.dto';
 import { CompanyDTO } from './dtos/company.dto';
@@ -42,11 +42,19 @@ export class SearchService {
       let name: string = body.name;
 
       // add to query
-      query = sql`${query} concat(details.name, details.last_name) LIKE ${name})`;
+      query = sql`${query} trim(concat(details.name, ' ',  details.last_name)) LIKE ${name}`;
     }
 
     // query database for account data, limit to 5 responses
     let data: Account[] = (await sql<Account[]>`SELECT * FROM account INNER JOIN type ON account.type_id=type.type_id INNER JOIN details ON account.details_id=details.details_id WHERE ${query};`).slice(0, 4);
+
+    // ensure account was returned
+    if (data.length == 0) {
+      return {
+        "type": 1,
+        "message": "Account not found"
+      };
+    }
 
     // create new array of account details objects
     let accountData: AccountDetails[] = new Array<AccountDetails>();
@@ -89,7 +97,7 @@ export class SearchService {
       "type": 0,
       "message": "Success",
       "accounts": accountData
-    }
+    };
   }
 
   async companySearch(body: CompanyDTO, res: Response): Promise<object> {
@@ -100,15 +108,32 @@ export class SearchService {
     * @return {Promise<object>} promise to object response for client
     */
 
-    let spending_category: string = body.category;
+    if (!body.name) {
+      throw new Error("Name must be present");
+    }
 
-    let data: Company[] = await sql<Company[]>`SELECT company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number FROM company INNER JOIN account ON company.details_id=account.details_id WHERE company.spending_category LIKE ${spending_category} ORDER BY company.greenscore DESC;`;
+    let data: Company[] = await sql<Company[]>`SELECT company.spending_category, company.carbon, company.waste, company.sustainability, company.greenscore, account.account_number, details.name FROM company INNER JOIN account ON company.details_id=account.details_id INNER JOIN details ON details.details_id=company.details_id WHERE company.spending_category IN (SELECT company.spending_category FROM company INNER JOIN details ON company.details_id=details.details_id WHERE details.name LIKE ${body.name}) ORDER BY company.greenscore DESC;`;
 
     return {
       "type": 0,
       "message": "Success",
       "data": data
-    }
+    };
   }
 
+  async offerSearch(res: Response): Promise<object> {
+    /** 
+    * Function to search for offers
+    * @param {Response} res - express response object
+    * @return {Promise<object>} promise to object response 
+    */
+
+    let data: Offer[] = await sql<Offer[]>`SELECT * FROM offers ORDER BY random() LIMIT 3`;
+
+    return {
+      "type": 0,
+      "message": "Success",
+      "data": data
+    };
+  }
 }

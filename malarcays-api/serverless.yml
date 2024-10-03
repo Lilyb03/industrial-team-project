@@ -6,19 +6,39 @@ plugins:
 
 custom:
   customDomain:
-    domainName: api.malarcays.uk
-    basePath: ""
-    stage: "dev"
-    createRoute53Record: true
-    allowPathMatching: true
-    apiType: rest
-    certificateName: "*.malarcays.uk"
+    rest:
+      domainName: api.malarcays.uk
+      basePath: ""
+      stage: "dev"
+      createRoute53Record: true
+      apiType: rest
+      endpointType: "regional"
+      certificateName: "malarcays.uk"
+      allowPathMatching: true
 
 provider:
   name: aws
   runtime: nodejs20.x
   stage: "dev"
   region: eu-west-1
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sns:Publish"
+      Resource:
+        - arn:aws:sns:eu-west-1:282315343020:transactions
+
+  environment:
+    APIG_ENDPOINT:
+      Fn::Join:
+        - ""
+        - - "https://"
+          - Ref: WebsocketsApi
+          - .execute-api.
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - ${self:provider.stage}
 
 functions:
   main:
@@ -31,7 +51,31 @@ functions:
           path: /{proxy+}
           method: any
     layers:
-      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:2
+      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
+
+  websocket:
+    handler: dist/websockets.sockHandler
+    timeout: 16
+    events:
+      - websocket:
+          route: $connect
+
+      - websocket:
+          route: $default
+
+      - websocket:
+          route: $disconnect
+    layers:
+      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
+
+  # dispatcher:
+  #   handler: dist/websockets.snsHandler
+  #   timeout: 16
+  #   events:
+  #     - sns:
+  #         arn: arn:aws:sns:eu-west-1:282315343020:transactions
+  #   layers:
+  #     - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
 
 package:
   exclude:

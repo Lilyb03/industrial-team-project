@@ -11,7 +11,7 @@ export function Transaction({ displayName, reference, amount, RAG, isInbound }: 
     var imgType: string;
     var variantType: string;
 
-    if (RAG < 0) {
+    if (RAG < 0 || !RAG) {
         imgType = '../../../img/flat.svg';
         variantType = 'light'
     }

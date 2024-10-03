@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { sql } from '../utils/db';
 import { CreateAccountsDTO } from './dtos/createAccounts.dto';
 import { LoginDto } from './dtos/login.dto';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable()
 export class AccountsService {
   async createAccount(createAccountsDto: CreateAccountsDTO) {
-    //function to create an account
 
-    const { name, lastName, type_id, spending_category, amount } = createAccountsDto;
+    //function to create an account
+    const { name, lastName, password, type_id, spending_category, amount } = createAccountsDto;
+    const hashedPassword = CryptoJS.SHA256(password).toString();
 
 
     //Get all the details ids from details table
@@ -36,8 +38,8 @@ export class AccountsService {
     * into the dielnd table
     */
     await sql`
-      INSERT INTO details (details_id, name, last_name)
-      VALUES (${detailsId}, ${name}, ${lastName || null}) 
+      INSERT INTO details (details_id, name, last_name, password)
+      VALUES (${detailsId}, ${name}, ${lastName || null}, ${(hashedPassword)}) 
     `;
 
     let createdAccount;
@@ -82,12 +84,17 @@ export class AccountsService {
 
   async login(loginData: LoginDto) {
     try {
-      /*quarry to get/fetch account data
-      that match the account number given
+      //hash the password using sha256
+      const hashedPassword = CryptoJS.SHA256(loginData.password).toString();
+
+      /*quarry to get/fetch account data by creating joined tables
+      that match the account number given as well as the password
       */
       const rows = await sql`
-        SELECT * FROM account
-        WHERE account_number = ${loginData.account}
+          SELECT * FROM account a
+          JOIN details d ON a.details_id = d.details_id
+          WHERE a.account_number = ${loginData.account}
+          AND d.password = ${hashedPassword}
       `;
       //if nothing was found return null
       if (rows.length === 0) {

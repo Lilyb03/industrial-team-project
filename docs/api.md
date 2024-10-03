@@ -129,6 +129,18 @@ Keys:
 
 `account_number` integer - the company's account number
 
+### Offer
+
+The object used to store the details of an offer
+
+Keys:
+
+`discount_val` float - the value of the discount (as percentage of original price - e.g. `discount_val = 0.7` is equivalent to 30% off)
+
+`discount_code` string - the discount code
+
+`company` string - the name of the company the discount applies to
+
 ## Routes
 
 ### Sign up
@@ -277,6 +289,25 @@ Keys:
 
 `data` array - array of company details
 
+### Offer Search
+
+This route can be used to search for offers
+
+#### Request
+
+Endpoint:
+`GET /search/offers`
+
+#### Response
+
+Keys:
+
+`type` integer - response type: 0 = success, 1 = failure
+
+`message` string - relevant error or success message
+
+`data` array - array of offers
+
 ### Transaction
 
 This route is used to initiate a transaction.
@@ -305,3 +336,24 @@ Keys:
 `message` string - relevant error or success message
 
 `transaction` object - transaction object (null if not relevant)
+
+### Claim Offers
+
+This route is used to claim offers.
+
+#### Request
+
+Endpoint:
+`GET /claim-offer`
+
+Required Params:
+
+`account` integer - account number
+
+#### Response
+
+Keys:
+
+`type` integer - response type: 0 = success, 1 = failure
+
+`message` string - relevant error or success message

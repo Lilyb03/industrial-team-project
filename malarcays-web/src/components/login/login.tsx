@@ -3,12 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+
 
 import { getDetails } from '../../services/details';
 import { AccountData } from '../../services/api';
 
 
-export function LoginPage({ setLoggedIn, setDetails }: { setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => any }) {
+export function LoginPage({setPage, setLoggedIn, setDetails }: { setPage: (pageNumber: number) => void, setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => any }) {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -21,7 +23,6 @@ export function LoginPage({ setLoggedIn, setDetails }: { setLoggedIn: (logged: b
 
     const loginURL = "https://api.malarcays.uk/login/"
 
-    //change post request when newer API version is deployed (so that)
     fetch(loginURL, {
       method: "POST",
       headers: {
@@ -54,20 +55,37 @@ export function LoginPage({ setLoggedIn, setDetails }: { setLoggedIn: (logged: b
   return (
     <>
       <Container className="vh-100">
-
-        <Container className='ml-3 mr-3 p-3 translate-middle top-50 start-50 position-absolute' id='box'>
-          <Image src='/img/Malarcays.png' className="mb-3" fluid />
+        <Container className="ml-3 mr-3 p-3 translate-middle top-50 start-50 position-absolute" id="box">
+          <Image src="/img/Malarcays.png" className="mb-3" fluid />
           <h2>Sign In</h2>
 
           <Form onSubmit={handleSubmit}>
-            <Form.Control className="mt-2 mb-2" name='acc' type="text" placeholder="Account Number" />
-            <Form.Control className="mt-2 mb-2" name='name' type="text" placeholder="Name" />
-            <Form.Control className="mt-2 mb-2" name='pass' type="password" placeholder="Password" />
-            <Button id='butt' className='mt-3' variant='primary' type='submit'>Sign In</Button>
+            <FloatingLabel label="Account Number" className="mt-2 mb-2">
+              <Form.Control name="acc" type="text" placeholder="Account Number" />
+            </FloatingLabel>
+
+            <FloatingLabel label="Name" className="mt-2 mb-2">
+              <Form.Control name="name" type="text" placeholder="Name" />
+            </FloatingLabel>
+
+            <FloatingLabel label="Password" className="mt-2 mb-2">
+              <Form.Control name="pass" type="password" placeholder="Password" />
+            </FloatingLabel>
+
+            <Button id="butt" className="mt-3" variant="primary" type="submit">
+              Sign In
+            </Button>
+
+            <Container>
+              <h5>
+                Don't have an account? Sign up here:{" "}
+                <Button id="signup" className="mb-1" variant="primary" onClick={() => {setPage(5);}}>Sign Up</Button>
+              </h5>
+            </Container>
           </Form>
         </Container>
       </Container>
     </>
-  )
+  );
 
 }

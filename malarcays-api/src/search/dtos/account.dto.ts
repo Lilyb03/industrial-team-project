@@ -3,9 +3,9 @@ import { IsNumber, IsOptional, IsString } from "class-validator";
 export class AccountDTO {
 	@IsOptional()
 	@IsNumber()
-	account: number;
+	account?: number;
 
 	@IsOptional()
 	@IsString()
-	name: string;
+	name?: string;
 }

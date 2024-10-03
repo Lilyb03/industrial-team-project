@@ -1,6 +1,8 @@
 import psycopg2
 import pandas as pd
 from faker import Faker
+import random
+import string
 
 fake = Faker()
 
@@ -47,7 +49,7 @@ def insert_company_data(cur):
     cur.execute(company_query)
     cur.execute(accounts_query)
 
-    return i
+    return i, list(data_df["Company Name"])
 
 
 def generate_customer_data(num_entries, num_companies):
@@ -67,6 +69,21 @@ def generate_customer_data(num_entries, num_companies):
     cur.execute(account_query)
 
 
+def generate_offers(num_offers, companies):
+    offers_query = "INSERT INTO offers (discount_val, discount_code, company) VALUES "
+
+    for i in range(num_offers):
+        discount_val = round((random.random() * 0.5) + 0.5, 1)
+        discount_code = "".join([random.choice(string.ascii_letters) for _ in range(5)])
+        company = random.choice(companies)
+
+        offers_query += f"({discount_val}, '{discount_code}', '{company}'),"
+
+    offers_query = offers_query[:-1] + ";"
+
+    cur.execute(offers_query)
+
+
 if __name__ == "__main__":
     conn, cur = connect_to_aurora()
 
@@ -74,10 +91,13 @@ if __name__ == "__main__":
     insert_tables(cur)
 
     print("----------- Inserting Companies ----------")
-    num_companies = insert_company_data(cur)
+    num_companies, companies = insert_company_data(cur)
 
     print("----------- Inserting Customers ----------")
     generate_customer_data(NUM_CUSTOMERS, num_companies + 2)
+
+    print("----------- Insert Offers ----------------")
+    generate_offers(10, companies)
 
     cur.execute("select * from account")
     print(len(cur.fetchall()))
