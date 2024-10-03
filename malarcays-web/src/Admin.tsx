@@ -193,7 +193,24 @@ export function AdminPage() {
             </tbody>
           </Table>
           </Container>
+          
+          <Container className="mt-5">
+            <h3 className="mb-4">Compliance & Customer Support</h3>
+            <div className="d-flex justify-content-between">
+              {/* Compliance Section */}
+              <div className="p-3 border">
+                <h5>Compliance</h5>
+                <Button variant="info" className="me-2">Know Your Customer</Button>
+                <Button variant="info">Audit Logs</Button>
+              </div>
 
+              <div className="p-3 border">
+                <h5>Customer Support</h5>
+                <Button variant="info" className="me-2">View Support Tickets</Button>
+                <Button variant="info">View Live Chat Logs</Button>
+              </div>
+            </div>
+          </Container>   
         </Container>
     </>
   );
