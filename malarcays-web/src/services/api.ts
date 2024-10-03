@@ -35,6 +35,7 @@ export let formatOptions = {
 };
 
 export function executeTransaction(transaction: TransactionInterface, data: AccountData): AccountData {
+  // console.log(transaction, data);
   let accountData: AccountData = { ...data };
   accountData.transactions.push(transaction);
 

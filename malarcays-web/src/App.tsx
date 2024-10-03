@@ -46,16 +46,16 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
 
   if (accountData.account_number != 0) {
     useEffect(() => {
-      const interval = setInterval(() => {
-        fetch(`https://api.malarcays.uk/transaction-events?account=${accountData.account_number}`).then((data) => data.json())
-          .then((res) => {
-            for (const t of res.data) {
-              setAccountData(executeTransaction(t, accountData));
-            }
-          })
-      }, 5000);
+      const socket = new WebSocket(`wss://0nq5sv7owa.execute-api.eu-west-1.amazonaws.com/dev?account=${accountData.account_number}`);
+      // const socket = new WebSocket(`wss://localhost:3001/dev?account=${accountData.account_number}`);
+      socket.onopen = () => {
+        console.log("ws opened");
+      };
 
-      return () => clearInterval(interval);
+      socket.onmessage = (msg) => {
+        console.log(msg.data);
+        setAccountData(executeTransaction(JSON.parse(msg.data), accountData));
+      }
     }, []);
   }
 

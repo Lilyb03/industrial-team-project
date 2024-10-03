@@ -68,14 +68,14 @@ functions:
     layers:
       - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
 
-  dispatcher:
-    handler: dist/websockets.snsHandler
-    timeout: 16
-    events:
-      - sns:
-          arn: arn:aws:sns:eu-west-1:282315343020:transactions
-    layers:
-      - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
+  # dispatcher:
+  #   handler: dist/websockets.snsHandler
+  #   timeout: 16
+  #   events:
+  #     - sns:
+  #         arn: arn:aws:sns:eu-west-1:282315343020:transactions
+  #   layers:
+  #     - arn:aws:lambda:eu-west-1:282315343020:layer:malarcays-api:3
 
 package:
   exclude:
