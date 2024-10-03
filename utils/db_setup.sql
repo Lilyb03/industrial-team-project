@@ -6,8 +6,9 @@ CREATE TYPE type_names as ENUM ('customer', 'company', 'admin');
 CREATE TABLE details (
   details_id SERIAL NOT NULL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NULL
-  password   varchar(255) default 'password'::character varying not null
+  last_name VARCHAR(255) NULL,
+  password VARCHAR(255) DEFAULT '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' NOT NULL,
+  has_offers BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE type (
@@ -52,10 +53,18 @@ CREATE TABLE transaction (
   CONSTRAINT fk_receiver_account FOREIGN KEY (receiver_account) REFERENCES account (account_number)
 );
 
-CREATE TABLE wsconnections (
-                               ws_id SERIAL NOT NULL,
-                               connection_id VARCHAR(255) NOT NULL,
-                               account INT,
-                               PRIMARY KEY(ws_id),
-                               CONSTRAINT fk_account FOREIGN KEY (account) REFERENCES account(account_number)
+CREATE TABLE offers (
+  offer_id SERIAL NOT NULL,
+  discount_val FLOAT NOT NULL,
+  discount_code VARCHAR(255) NOT NULL,
+  company VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE wsconnections (
+  ws_id SERIAL NOT NULL,
+  connection_id VARCHAR(255) NOT NULL,
+  account INT,
+  PRIMARY KEY(ws_id),
+  CONSTRAINT fk_account FOREIGN KEY (account) REFERENCES account(account_number)
+);
+
