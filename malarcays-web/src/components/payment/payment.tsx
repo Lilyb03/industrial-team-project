@@ -32,7 +32,7 @@ function makePaymentCall(accountNumber: string, recipient: string, transactionAm
       console.log(res);
       if (res.type == 0) {
         console.log("here");
-        setAccountData(executeTransaction(res.data, accountData));
+        executeTransaction(res.data, accountData, setAccountData);
         setSuccess(true);
       } else {
         setClientError("Something went wrong with your payment.")

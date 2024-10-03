@@ -17,7 +17,15 @@ export interface AccountData {
   balance: number,
   permissions: string,
   green_score: number,
+  has_offers: boolean,
   transactions: Array<TransactionInterface>
+}
+
+export interface Offer {
+  offer_id?: number,
+  discount_val: number,
+  discount_code: string,
+  company: string
 }
 
 export let empty_account: AccountData = {
@@ -26,6 +34,7 @@ export let empty_account: AccountData = {
   balance: 0,
   permissions: "",
   green_score: 0,
+  has_offers: false,
   transactions: []
 }
 
@@ -34,18 +43,39 @@ export let formatOptions = {
   maximumFractionDigits: 2
 };
 
-export function executeTransaction(transaction: TransactionInterface, data: AccountData): AccountData {
-  // console.log(transaction, data);
+export function executeTransaction(transaction: TransactionInterface, data: AccountData, setAccountData: (data: AccountData) => void): void {
+  setAccountData(executeAccounting(transaction, data));
+
+  executeGreen(transaction, data)
+    .then((res) => {
+      setAccountData(res);
+    });
+}
+
+function executeAccounting(transaction: TransactionInterface, data: AccountData): AccountData {
   let accountData: AccountData = { ...data };
   accountData.transactions.push(transaction);
 
   if (transaction.sender_account == accountData.account_number) {
     accountData.balance -= transaction.amount;
-    accountData.green_score += transaction.greenscore || 0;
   }
 
   if (transaction.receiver_account == accountData.account_number) {
     accountData.balance += transaction.amount;
+  }
+
+  return accountData;
+}
+
+async function executeGreen(transaction: TransactionInterface, data: AccountData): Promise<AccountData> {
+  await new Promise(r => setTimeout(r, 5000));
+
+  let accountData: AccountData = { ...data };
+
+  if (transaction.sender_account == accountData.account_number) {
+    accountData.has_offers = (accountData.green_score + (transaction.greenscore || 0) > Math.ceil(accountData.green_score / 50) * 50) || accountData.has_offers;
+    accountData.green_score += transaction.greenscore || 0;
+    console.log(accountData.green_score, accountData.has_offers);
   }
 
   return accountData;

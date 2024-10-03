@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BottomBar } from './components/bottombar.tsx';
 import { TopBar } from './components/topbar.tsx';
 import { TransactionsPage } from './components/transactions/transactions_page.tsx';
+import { GamePage } from './components/game/game_page.tsx';
 
 // import Stack from 'react-bootstrap/Stack';
 // import Container from 'react-bootstrap/Container';
@@ -71,7 +72,7 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
     case 1:
       return (
         <>
-          <h1>first page</h1>
+          <GamePage greenscore={accountData.green_score} hasOffer={accountData.has_offers} accountData={accountData} setAccountData={setAccountData} />
         </>
       );
       break;
