@@ -16,6 +16,10 @@ export class CreateAccountsDTO {
   lastName?: string;
 
   @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @IsNotEmpty()
   @IsEnum(AccountTypes)
   type_id: AccountTypes;
 

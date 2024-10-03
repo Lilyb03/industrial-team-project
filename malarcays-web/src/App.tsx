@@ -21,6 +21,7 @@ import Payment from './components/payment/payment.tsx';
 import { LoginPage } from './components/login/login.tsx';
 // import { getDetails } from './services/details.tsx';
 import { AccountData, empty_account, executeTransaction } from './services/api.ts';
+import SignupPage from './components/login/Signup.tsx';
 
 function CalculateGreenLevel(score: number) {
   return Math.floor(
@@ -43,8 +44,8 @@ function CalculateGreenStuff(score: number) {
 
 
 function MainPage({ page, setPage, accountData, setAccountData }: { page: number, setPage: (pageNumber: number) => void, accountData: AccountData, setAccountData: (data: AccountData) => void }) {
-
   if (accountData.account_number != 0) {
+
     useEffect(() => {
       const socket = new WebSocket(`wss://0nq5sv7owa.execute-api.eu-west-1.amazonaws.com/dev?account=${accountData.account_number}`);
       // const socket = new WebSocket(`wss://localhost:3001/dev?account=${accountData.account_number}`);
@@ -95,9 +96,17 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
           <Payment setPage={setPage} accountData={accountData} setAccountData={setAccountData} />
         </>
       )
+    case 5:
+      return (
+        <>
+          <SignupPage setPage={setPage} />
+        </>
+      );
+    default:
+      return null;
   }
-
 }
+
 
 // function FetchUser(){
 //   const apiCall = "https://api.malarcays.uk/balance?account=91";
@@ -121,6 +130,7 @@ function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
 
+
   // useEffect(() => {
   //     getDetails()
   //       .then(data => {
@@ -130,23 +140,29 @@ function App() {
 
   // console.log(details);
 
-  if (!loggedIn) {
+  if (!loggedIn && page !== 5) {
     return (
       <>
-        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} />
+        <LoginPage setLoggedIn={setLoggedIn} setDetails={setDetails} setPage={setPage}/>
       </>
     )
 
-  }
+  }else if (!loggedIn && page === 5){
+    return (
+      <>
+        <SignupPage setPage={setPage} />
+      </>
 
-  return (
+      )
+
+  }return (
     <>
       <header>
         <TopBar perc={CalculateGreenStuff(details.green_score)} name={details.name} level={CalculateGreenLevel(details.green_score)} />
       </header>
       <MainPage page={page} setPage={setPage} accountData={details} setAccountData={setDetails} />
       <footer>
-        <BottomBar setPage={setPage} />
+        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} />
       </footer>
     </>
   );
