@@ -43,6 +43,7 @@ provider:
 functions:
   main:
     handler: dist/serverless.handler
+    # timeout: 30
     events:
       - http:
           path: /

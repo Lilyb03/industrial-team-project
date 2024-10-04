@@ -5,20 +5,22 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import '../../index.css';
 
-export function Transaction({ displayName, reference, amount, RAG, isInbound }: { displayName: string, reference: string, amount: number, RAG: number, isInbound: boolean }) {
+export function Transaction({ displayName, reference, amount, rag_score, isInbound }: { displayName: string, reference: string, amount: number, rag_score: number, isInbound: boolean }) {
 
 
     var imgType: string;
     var variantType: string;
 
-    if (RAG < 0 || !RAG) {
+    console.log(displayName, rag_score);
+
+    if (rag_score < 0 || rag_score == null) {
         imgType = '../../../img/flat.svg';
         variantType = 'light'
     }
-    else if (RAG < 0.5) {
+    else if (rag_score < 0.5) {
         imgType = '../../../img/down.svg';
         variantType = 'danger';
-    } else if (RAG > 0.5) {
+    } else if (rag_score > 0.5) {
         imgType = '../../../img/up.svg';
         variantType = 'success';
     } else {

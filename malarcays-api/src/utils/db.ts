@@ -55,7 +55,11 @@ export interface Transaction {
 	amount: number,
 	date_time: number,
 	greenscore?: number,
-	reference: string
+	reference: string,
+	rag_score?: number,
+	carbon?: number,
+	waste?: number,
+	sustainability?: number
 }
 
 export interface WSConnection {

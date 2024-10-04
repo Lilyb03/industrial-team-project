@@ -31,7 +31,7 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
 
     const requestBody: any = {
       name: entry.name,
-      password: entry.password,
+      password: entry.pass,
       type_id: parseInt(entry.type_id.toString()),
       amount: 10000,
     };
@@ -43,6 +43,8 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
     if (entry.spending_category) {
       requestBody.spending_category = entry.spending_category;
     }
+
+    console.log(requestBody);
 
     fetch(signupURL, {
       method: 'POST',
@@ -139,7 +141,7 @@ function SignupPage({ setPage }: { setPage: (pageNumber: number) => void }) {
           <Modal.Title>Account Created</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Your account number is: <strong>{accountNumber}</strong></p>
+          <p>Your account number is: <strong>{accountNumber.toString().padStart(9, '0')}</strong></p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>

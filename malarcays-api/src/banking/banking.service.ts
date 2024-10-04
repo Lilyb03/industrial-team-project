@@ -35,7 +35,7 @@ export class BankingService {
     let account: Account = data[0];
 
     // query the database for transaction data
-    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number};`;
+    let transactions: Transaction[] = await sql<Transaction[]>`SELECT * FROM transaction JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS sender_name, account.account_number AS sender_num FROM account INNER JOIN details ON account.details_id=details.details_id) AS sender_account ON transaction.sender_account=sender_account.sender_num JOIN (SELECT trim(concat(details.name, ' ', details.last_name)) AS receiver_name, account.account_number AS receiver_num, account.company_id FROM account INNER JOIN details ON account.details_id=details.details_id) AS receiver_account ON transaction.receiver_account=receiver_account.receiver_num LEFT JOIN (SELECT company_id, carbon, waste, sustainability, greenscore as rag_score FROM company) AS company ON company.company_id=receiver_account.company_id WHERE sender_account=${account.account_number} OR receiver_account=${account.account_number} ORDER BY transaction.date_time DESC;`;
 
     for (let i = 0; i < transactions.length; i++) {
       transactions[i].date_time = Math.floor(new Date(transactions[i].date_time).valueOf() / 1000);
@@ -128,9 +128,14 @@ export class BankingService {
         throw new Error("Company request returned zero companies");
       }
 
+      transactionData.rag_score = companies[0].greenscore;
+      transactionData.carbon = companies[0].carbon;
+      transactionData.waste = companies[0].waste;
+      transactionData.sustainability = companies[0].sustainability;
+
       greenscore = (6 * companies[0].greenscore * Math.log2((transactionData.amount / 500) + 1));
     }
-    transactionData.greenscore = greenscore;
+    transactionData.greenscore = greenscore == null ? -1 : greenscore;
 
     // update account data for every relevant account
     for (const a of accountData) {
@@ -143,7 +148,7 @@ export class BankingService {
 
 
     // add transaction row into database table
-    await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore ? greenscore : -1}, ${transactionData.reference})`;
+    let result = await sql`INSERT INTO transaction (sender_account, receiver_account, amount, date_time, greenscore, reference) VALUES (${transactionData.sender_account}, ${transactionData.receiver_account}, ${transactionData.amount}, to_timestamp(${transactionData.date_time}), ${greenscore != null ? greenscore : -1}, ${transactionData.reference});`;
 
     // publish transaction event to recipient
     // const msg: Transaction = JSON.parse(record.Sns.Message) as Transaction;
