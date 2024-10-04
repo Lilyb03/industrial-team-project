@@ -14,13 +14,13 @@ export interface TransactionInterface {
 export interface AccountData {
   account_number: number;
   name: string;
-  last_name?: string; 
+  last_name?: string;
   balance: number;
   permissions: string;
   green_score: number;
   has_offers: boolean,
   transactions: Array<TransactionInterface>;
-  account_type: number;
+  account_type?: number;
   company?: {
     company_name: string;
     spending_category: string;
@@ -39,15 +39,15 @@ export interface Offer {
 }
 
 export let empty_account: AccountData = {
-    account_number: 0,
-    name: '',
-    last_name: '',
-    balance: 0,
-    permissions: '',
-    green_score: 0,
-    transactions: [],
-    account_type: 0,
-    company: undefined,
+  account_number: 0,
+  name: '',
+  last_name: '',
+  balance: 0,
+  permissions: '',
+  green_score: 0,
+  has_offers: false,
+  transactions: [],
+  account_type: 0,
 }
 
 export let formatOptions = {

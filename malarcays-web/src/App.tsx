@@ -164,7 +164,7 @@ function App() {
       </header>
       <MainPage page={page} setPage={setPage} accountData={details} setAccountData={setDetails} />
       <footer>
-        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} />
+        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} accountDetails={details} />
       </footer>
     </>
   );
