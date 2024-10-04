@@ -83,7 +83,10 @@ function TransactionModal(props: any) {
         <p className="text-start mb-1">Sender: {transaction.sender_name}</p>
         <p className="text-start mb-1">Recipient: {transaction.receiver_name}</p>
         <p className="text-start mb-1">Amount: {formatBalance(transaction.amount)}</p>
-        <p className="text-start mb-1">Green Score: {transaction.greenscore}</p>
+        <p className="text-start mb-1">Green Score: {transaction.greenscore.toFixed(2)}</p>
+        <p className="text-start mb-1">Carbon Score: {transaction.carbon}</p>
+        <p className="text-start mb-1">Waste Score: {transaction.waste}</p>
+        <p className="text-start mb-1">Sustainability Score: {transaction.sustainability}</p>
         <h4>Recommended Companies</h4>
         <Row>
           <Col>
@@ -106,7 +109,7 @@ function TransactionModal(props: any) {
                 <p>{object.account_number.toString().padStart(9, '0')}</p>
               </Col>
               <Col>
-                <p>{object.greenscore}</p>
+                <p>{object.greenscore.toFixed(2)}</p>
               </Col>
             </Row>
           ))
@@ -178,7 +181,7 @@ export function TransactionsPage({ accountData, setPage }: { accountData: Accoun
                       : object.sender_name}
                     reference={object.reference}
                     amount={object.amount}
-                    RAG={object.greenscore}
+                    rag_score={object.rag_score}
                     isInbound={object.receiver_account == accountData.account_number}
                   />
                 </ListGroup.Item>
