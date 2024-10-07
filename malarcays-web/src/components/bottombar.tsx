@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { AccountData, empty_account } from '../services/api.ts';
 
-export function BottomBar({ setPage, setLoggedIn, setDetails }: { setPage: (pageNumber: number) => void, setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => void }) {
+export function BottomBar({ setPage, setLoggedIn, setDetails, accountDetails }: { setPage: (pageNumber: number) => void, setLoggedIn: (logged: boolean) => void, setDetails: (details: AccountData) => void, accountDetails: AccountData }) {
 
   const handleSignOut = () => {
     setDetails(empty_account);
@@ -17,6 +17,7 @@ export function BottomBar({ setPage, setLoggedIn, setDetails }: { setPage: (page
         <Container>
           <Button variant="secondary" onClick={() => setPage(0)}>Profile</Button>
           <Button variant="secondary" onClick={() => setPage(1)}>Activity</Button>
+          {accountDetails.permissions === "admin" && <Button variant="secondary" onClick={() => setPage(3)}>Admin</Button>}
           <Button variant="danger" onClick={handleSignOut}>Sign Out</Button>
         </Container>
       </Navbar>

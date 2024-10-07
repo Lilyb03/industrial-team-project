@@ -12,13 +12,23 @@ export interface TransactionInterface {
 }
 
 export interface AccountData {
-  account_number: number,
-  name: string,
-  balance: number,
-  permissions: string,
-  green_score: number,
+  account_number: number;
+  name: string;
+  last_name?: string;
+  balance: number;
+  permissions: string;
+  green_score: number;
   has_offers: boolean,
-  transactions: Array<TransactionInterface>
+  transactions: Array<TransactionInterface>;
+  account_type?: number;
+  company?: {
+    company_name: string;
+    spending_category: string;
+    carbon_emissions: number;
+    waste_management: number;
+    sustainability_practices: number;
+    rag_score: number;
+  }
 }
 
 export interface Offer {
@@ -30,12 +40,14 @@ export interface Offer {
 
 export let empty_account: AccountData = {
   account_number: 0,
-  name: "",
+  name: '',
+  last_name: '',
   balance: 0,
-  permissions: "",
+  permissions: '',
   green_score: 0,
   has_offers: false,
-  transactions: []
+  transactions: [],
+  account_type: 0,
 }
 
 export let formatOptions = {

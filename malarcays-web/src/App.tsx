@@ -6,6 +6,7 @@ import { BottomBar } from './components/bottombar.tsx';
 import { TopBar } from './components/topbar.tsx';
 import { TransactionsPage } from './components/transactions/transactions_page.tsx';
 import { GamePage } from './components/game/game_page.tsx';
+import Admin from './Admin';
 
 // import Stack from 'react-bootstrap/Stack';
 // import Container from 'react-bootstrap/Container';
@@ -23,6 +24,7 @@ import { LoginPage } from './components/login/login.tsx';
 // import { getDetails } from './services/details.tsx';
 import { AccountData, empty_account, executeTransaction } from './services/api.ts';
 import SignupPage from './components/login/Signup.tsx';
+
 
 function CalculateGreenLevel(score: number) {
   return Math.floor(
@@ -86,11 +88,10 @@ function MainPage({ page, setPage, accountData, setAccountData }: { page: number
     case 3:
       return (
         <>
-          <h1>fourth page</h1>
+          <Admin />
         </>
       );
       break;
-
     case 4:
       return (
         <>
@@ -163,7 +164,7 @@ function App() {
       </header>
       <MainPage page={page} setPage={setPage} accountData={details} setAccountData={setDetails} />
       <footer>
-        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} />
+        <BottomBar setPage={setPage} setLoggedIn={setLoggedIn} setDetails={setDetails} accountDetails={details} />
       </footer>
     </>
   );
